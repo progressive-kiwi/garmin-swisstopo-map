@@ -22,6 +22,7 @@ on:
     branches: [main]
     paths:
       - "tools/**"
+      - "routable/**"
       - ".github/workflows/pages.yml"
   workflow_dispatch:                     # manual trigger from Actions tab
 
@@ -62,6 +63,11 @@ jobs:
           else
             echo "No GSST_BUILD_API secret set -- picker will show offline-only path."
           fi
+
+      # routable.html fetches the build script + mkgmap options to assemble
+      # its build-kit zip; publish them next to the page.
+      - name: Copy routable build kit sources
+        run: cp -r routable tools/routable
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

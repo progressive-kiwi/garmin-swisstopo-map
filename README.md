@@ -10,6 +10,11 @@ Pre-built Custom Maps (KMZ) packs of Switzerland for the **Epix 2 / Epix Pro / F
 
 Browse pre-built downloads under [Releases](../../releases).
 
+## Routable vector map (fenix 9 Pro, Edge 1050)
+
+- **[Routable map builder + install guide](https://joepvde.github.io/garminswisstopo-public/routable.html)**: whole-Switzerland `.img` (prebuilt, ~300 MB) or a custom area build kit. Turn-by-turn routing and address search on the device; no tile cap; no hillshading or trail overlay.
+- Pipeline and review notes: [docs/ROUTABLE.md](docs/ROUTABLE.md).
+
 ## What you get on the watch
 
 Either:

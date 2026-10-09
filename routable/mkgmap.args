@@ -1,0 +1,36 @@
+# mkgmap options for the routable Switzerland vector map
+# (fenix 9 Pro / Edge 1050). Read by build_img.sh via `-c mkgmap.args`.
+#
+# Scope: roads + paths with full routing graph, address search, POIs.
+# Deliberately NOT included: hillshading / DEM, contour lines, hiking-route
+# relation overlays. Fewer object layers = faster pan/zoom on the watch.
+
+# --- routing + search ---
+route
+index
+housenumbers
+location-autofill=is_in,nearest
+add-pois-to-areas
+link-pois-to-ways
+process-destination
+process-exits
+make-opposite-cycleways
+drive-on=right
+max-routing-island-len=700
+
+# --- names: Latin-1 covers de/fr/it/rm diacritics ---
+code-page=1252
+lower-case
+country-name=Switzerland
+country-abbr=CHE
+
+# --- geometry simplification: smoother rendering, smaller file ---
+reduce-point-density=4
+reduce-point-density-polygon=8
+min-size-polygon=12
+merge-lines
+allow-reverse-merge
+order-by-decreasing-area
+
+# --- build ---
+max-jobs
