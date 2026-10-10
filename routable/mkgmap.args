@@ -24,10 +24,18 @@ lower-case
 country-name=Switzerland
 country-abbr=CHE
 
+# --- zoom levels: 7 detail steps (default style ships 4: 24/22/20/18) ---
+# Intermediate steps smooth the detail transitions while zooming; level 6
+# (resolution 16, ~20-30 km scale) keeps motorways, main roads, large lakes
+# and towns on the vector map when zoomed far out instead of dropping to
+# the device basemap.
+levels=0:24, 1:22, 2:21, 3:20, 4:19, 5:18, 6:16
+
 # --- geometry simplification: smoother rendering, smaller file ---
+# Douglas-Peucker error grows automatically at lower resolutions.
 reduce-point-density=4
 reduce-point-density-polygon=8
-min-size-polygon=12
+polygon-size-limits=24:12, 20:10, 18:8, 16:4
 merge-lines
 allow-reverse-merge
 order-by-decreasing-area

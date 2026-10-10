@@ -187,7 +187,7 @@
     <pre id="cmd-gha"></pre>
     <ol start="3"><li>When the run finishes (~10 min), download the <code>.img</code> from the run's <em>Artifacts</em>.</li></ol>
   </details>
-  <p class="lede">Build time on 4 cores: ~1 min for a city, ~6 min for all of Switzerland (304 MB). First run downloads the Swiss OSM extract (~650 MB).</p>
+  <p class="lede">Build time on 4 cores: ~1 min for a city, ~6 min for all of Switzerland (310 MB). First run downloads the Swiss OSM extract (~650 MB).</p>
 </div>
 
 <!-- ============================ STEP 4 ============================ -->
@@ -209,7 +209,8 @@
 <details><summary>What the build contains</summary>
   <ul>
     <li>Routing graph (NOD/NET), address and POI index (MDR), house numbers.</li>
-    <li>Geometry simplification (<code>reduce-point-density</code>, merged lines) for faster drawing.</li>
+    <li>7 zoom levels (resolution 24 → 16): detail thins out step by step while zooming; main roads, lakes and towns stay visible to ~20–30 km scale.</li>
+    <li>Geometry simplification (<code>reduce-point-density</code>, per-level polygon size limits, merged lines) for faster drawing.</li>
     <li>mapnik-style TYP (colour scheme close to openstreetmap.org); omit with <code>--no-typ</code> for Garmin default colours.</li>
     <li>Excluded: DEM / hillshading, contour lines, hiking-route relation overlays.</li>
   </ul>
