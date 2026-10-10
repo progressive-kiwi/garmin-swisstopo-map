@@ -481,7 +481,7 @@
         <li><strong>Enable the map</strong>:<ul>${d.enable.map((s) => `<li>${fill(s)}</li>`).join("")}</ul></li>
         <li><strong>Route</strong>:<ul>${d.route.map((s) => `<li>${s}</li>`).join("")}</ul></li>
       </ol>
-      <div class="callout warn"><strong>Map not listed after reboot?</strong> Move the file to <code>${d.folderAlt}/</code>, reboot again. Folder scanning differs between firmware generations.</div>
+      <div class="callout warn"><strong>Map not listed after reboot?</strong> Move the file to <code>${d.folderAlt}/</code>, reboot again. Folder scanning differs between firmware generations. To see which map files the device actually holds, try the experimental <a href="mtp_probe.html">USB probe</a> (Chrome/Edge, read-only).</div>
       <div class="callout info"><strong>Updating</strong>: overwrite the file with a newer build (same name), reboot. <strong>Removing</strong>: delete only your <code>${escapeHtml(o.file)}</code>.</div>`;
   }
 

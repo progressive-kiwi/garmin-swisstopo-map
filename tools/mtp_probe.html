@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Garmin USB probe</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Read-only WebUSB test: connect a Garmin watch or Edge over MTP and list the map files on it.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<style>
+  :root {
+    --bg: #faf8f3; --surface: #ffffff; --ink: #1a1d21; --muted: #5b6470;
+    --line: #e7e3d8; --accent: #d4351c; --accent-dark: #a82a16; --code: #f1efe7;
+    --info-bg: #e8f0fb; --info-bd: #3870b6; --warn-bg: #fef5e7; --warn-bd: #f39c12;
+    --good-bg: #e6f3ea; --good-bd: #27ae60; --bad-bg: #fbe8e6; --bad-bd: #c0392b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #15171a; --surface: #1d2024; --ink: #e8e6e1; --muted: #9aa3ad;
+      --line: #2e3238; --accent: #ef5a3f; --accent-dark: #ff8a70; --code: #262a30;
+      --info-bg: #17243a; --warn-bg: #33270f; --good-bg: #13291c; --bad-bg: #3a1a17;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, system-ui, sans-serif;
+    max-width: 880px; margin: 0 auto; padding: 0 16px 3rem;
+    line-height: 1.55; color: var(--ink); background: var(--bg);
+  }
+  a { color: var(--accent-dark); }
+  h1 { font-size: clamp(1.5rem, 3.5vw, 2rem); margin: 1.4rem 0 .4rem; }
+  h2 { margin-top: 2rem; border-bottom: 2px solid var(--line); padding-bottom: .3rem; font-size: 1.15rem; }
+  code, pre { background: var(--code); padding: .1em .35em; border-radius: 3px; font-size: .88em; }
+  pre { padding: .7rem .9rem; overflow: auto; max-height: 320px; border: 1px solid var(--line); white-space: pre-wrap; word-break: break-all; }
+  table { border-collapse: collapse; width: 100%; font-size: .9rem; margin: .5rem 0; }
+  th, td { border-bottom: 1px solid var(--line); padding: .35rem .5rem; text-align: left; }
+  th { color: var(--muted); font-weight: 600; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  tr.map td:first-child { font-weight: 600; }
+  .lede { color: var(--muted); margin-top: 0; }
+  .topbar { border-bottom: 1px solid var(--line); margin: 0 -16px 1rem; padding: 0 16px; }
+  .topbar-inner { display: flex; align-items: center; justify-content: space-between; height: 50px; }
+  .nav-back { font-size: .9rem; color: var(--muted); text-decoration: none; }
+  .tag { font-size: .75rem; font-weight: 600; color: var(--muted); letter-spacing: .04em; text-transform: uppercase; }
+  .callout { border-left: 4px solid; padding: .7rem 1rem; margin: 1rem 0; border-radius: 4px; }
+  .info { background: var(--info-bg); border-color: var(--info-bd); }
+  .warn { background: var(--warn-bg); border-color: var(--warn-bd); }
+  .good { background: var(--good-bg); border-color: var(--good-bd); }
+  .bad  { background: var(--bad-bg);  border-color: var(--bad-bd); }
+  .row { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; margin: .6rem 0; }
+  .btn {
+    appearance: none; font: inherit; font-weight: 600; font-size: .92rem; border-radius: 999px;
+    padding: .5rem 1rem; cursor: pointer; border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+  }
+  .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn[disabled] { opacity: .5; cursor: not-allowed; }
+  .kv { display: grid; grid-template-columns: max-content 1fr; gap: .15rem 1rem; font-size: .92rem; }
+  .kv dt { color: var(--muted); }
+  .kv dd { margin: 0; word-break: break-all; }
+  .hidden { display: none !important; }
+  label.chk { font-size: .88rem; color: var(--muted); display: inline-flex; gap: .35rem; align-items: center; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="nav-back" href="routable.html">← Routable map</a>
+    <span class="tag">Experimental · read-only</span>
+  </div>
+</header>
+
+<h1>Garmin USB probe</h1>
+<p class="lede">Connects to a Garmin device over USB straight from the browser (WebUSB + MTP) and lists the map files on it. Nothing is written, moved or deleted. Purpose: find out whether a browser-based map manager works on fēnix 9 Pro / Edge 1050.</p>
+
+<div class="callout bad hidden" id="no-webusb"><strong>WebUSB not available.</strong> Use Chrome, Edge, Brave or Opera on a desktop computer, over <code>https://</code> or <code>localhost</code>. Firefox and Safari do not support WebUSB.</div>
+
+<h2>1 · Prepare</h2>
+<ul>
+  <li>Connect the device with a data USB cable and wake it.</li>
+  <li>Close every program that talks to the device: Garmin Express, OpenMTP, Android File Transfer, file managers showing it.</li>
+  <li><strong>Linux</strong>: unmount it in the file manager (or <code>gio mount -u mtp://…</code>). If access is denied, add a udev rule: <code>SUBSYSTEM=="usb", ATTR{idVendor}=="091e", MODE="0666"</code>.</li>
+  <li><strong>Windows</strong>: Windows usually claims MTP devices itself, so this probe is expected to fail there. A failure report is still useful.</li>
+</ul>
+
+<h2>2 · Connect</h2>
+<div class="row">
+  <button class="btn btn-primary" id="connect" type="button">Connect device…</button>
+  <button class="btn" id="disconnect" type="button" disabled>Disconnect</button>
+  <label class="chk"><input type="checkbox" id="all-vendors"> Show non-Garmin USB devices</label>
+</div>
+<div id="status"></div>
+
+<div id="result" class="hidden">
+  <h2>3 · Device</h2>
+  <dl class="kv" id="devinfo"></dl>
+
+  <h2>4 · Storage</h2>
+  <table id="storages"><thead><tr><th>Storage</th><th>Capacity</th><th>Free</th></tr></thead><tbody></tbody></table>
+
+  <h2>5 · Map files</h2>
+  <p class="lede">Scanned: <code>Garmin/</code>, <code>Garmin/Maps/</code>, <code>Garmin/CustomMaps/</code>. Map files (<code>.img</code>, <code>.kmz</code>, <code>.gma</code>, <code>.unl</code>, <code>.jnx</code>) in bold.</p>
+  <table id="files"><thead><tr><th>Path</th><th>Size</th></tr></thead><tbody></tbody></table>
+  <div class="row">
+    <button class="btn" id="scan-more" type="button">Also list the storage root</button>
+  </div>
+</div>
+
+<h2>Report</h2>
+<p class="lede">Copy and share this (e.g. in a GitHub issue) so support for your device and OS can be confirmed. Contains the device model and firmware, and file names; the serial number is masked.</p>
+<div class="row"><button class="btn" id="copy" type="button">Copy report</button></div>
+<pre id="log" aria-live="polite"></pre>
+
+<script>
+(() => {
+  "use strict";
+  const $ = (s) => document.querySelector(s);
+  const GARMIN_VID = 0x091e;
+  const MAP_EXT = /\.(img|kmz|gma|unl|jnx)$/i;
+
+  // ---------- log ----------
+  const logLines = [`ua: ${navigator.userAgent}`, `platform: ${navigator.userAgentData?.platform || navigator.platform}`];
+  function log(msg) { logLines.push(msg); $("#log").textContent = logLines.join("\n"); }
+  log("");
+  function status(kind, html) { $("#status").innerHTML = html ? `<div class="callout ${kind}">${html}</div>` : ""; }
+
+  if (!("usb" in navigator)) { $("#no-webusb").classList.remove("hidden"); $("#connect").disabled = true; log("navigator.usb: missing"); }
+
+  // ---------- PTP / MTP constants ----------
+  const OP = { GetDeviceInfo: 0x1001, OpenSession: 0x1002, CloseSession: 0x1003, GetStorageIDs: 0x1004,
+               GetStorageInfo: 0x1005, GetObjectHandles: 0x1007, GetObjectInfo: 0x1008 };
+  const RC = { OK: 0x2001, SessionAlreadyOpen: 0x201e };
+  const TYPE = { Command: 1, Data: 2, Response: 3, Event: 4 };
+  const FMT_ASSOCIATION = 0x3001;
+  const ROOT = 0xffffffff;
+
+  // ---------- binary helpers ----------
+  class Reader {
+    constructor(buf, off = 0) { this.v = new DataView(buf); this.o = off; }
+    u8() { return this.v.getUint8(this.o++); }
+    u16() { const x = this.v.getUint16(this.o, true); this.o += 2; return x; }
+    u32() { const x = this.v.getUint32(this.o, true); this.o += 4; return x; }
+    u64() { const lo = this.u32(), hi = this.u32(); return hi * 2 ** 32 + lo; }
+    str() {
+      const n = this.u8(); if (!n) return "";
+      let s = ""; for (let i = 0; i < n; i++) { const c = this.u16(); if (c) s += String.fromCharCode(c); }
+      return s;
+    }
+    arr16() { const n = this.u32(); const a = []; for (let i = 0; i < n; i++) a.push(this.u16()); return a; }
+    arr32() { const n = this.u32(); const a = []; for (let i = 0; i < n; i++) a.push(this.u32()); return a; }
+  }
+  const hex = (n, w = 4) => "0x" + n.toString(16).padStart(w, "0");
+  const fmtSize = (b) => b == null ? "?" : b >= 2 ** 30 ? (b / 2 ** 30).toFixed(1) + " GB" : b >= 2 ** 20 ? (b / 2 ** 20).toFixed(1) + " MB" : b >= 1024 ? (b / 1024).toFixed(0) + " KB" : b + " B";
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+  // ---------- MTP session over WebUSB ----------
+  class Mtp {
+    constructor(dev) { this.dev = dev; this.tid = 0; }
+
+    static findInterface(dev) {
+      const cands = [];
+      for (const iface of dev.configuration.interfaces) {
+        for (const alt of iface.alternates) {
+          const eps = alt.endpoints;
+          const bin = eps.find((e) => e.type === "bulk" && e.direction === "in");
+          const bout = eps.find((e) => e.type === "bulk" && e.direction === "out");
+          if (!bin || !bout) continue;
+          // 6/1/1 = Still Image (PTP/MTP). Many MTP devices use vendor class 0xff instead.
+          const score = (alt.interfaceClass === 6 ? 2 : alt.interfaceClass === 0xff ? 1 : 0) + (/mtp/i.test(alt.interfaceName || "") ? 2 : 0);
+          cands.push({ score, iface: iface.interfaceNumber, alt: alt.alternateSetting, cls: alt.interfaceClass,
+                       sub: alt.interfaceSubclass, proto: alt.interfaceProtocol, name: alt.interfaceName || "",
+                       inEp: bin.endpointNumber, outEp: bout.endpointNumber, inSize: bin.packetSize });
+        }
+      }
+      cands.sort((a, b) => b.score - a.score);
+      return cands;
+    }
+
+    async open() {
+      const d = this.dev;
+      await d.open();
+      if (!d.configuration) await d.selectConfiguration(1);
+      const cands = Mtp.findInterface(d);
+      cands.forEach((c) => log(`  iface ${c.iface}.${c.alt} class ${hex(c.cls, 2)}/${hex(c.sub, 2)}/${hex(c.proto, 2)} "${c.name}" bulk in ${c.inEp} out ${c.outEp} (${c.inSize} B) score ${c.score}`));
+      if (!cands.length) throw new Error("No interface with bulk IN/OUT endpoints: the device is probably not in MTP mode.");
+      const c = cands[0];
+      await d.claimInterface(c.iface);
+      if (c.alt) await d.selectAlternateInterface(c.iface, c.alt);
+      Object.assign(this, { iface: c.iface, inEp: c.inEp, outEp: c.outEp, chunk: Math.max(c.inSize, 512) * 128 });
+      log(`claimed interface ${c.iface}`);
+    }
+
+    async send(code, params = []) {
+      const len = 12 + 4 * params.length;
+      const b = new DataView(new ArrayBuffer(len));
+      const tid = ++this.tid;
+      b.setUint32(0, len, true); b.setUint16(4, TYPE.Command, true); b.setUint16(6, code, true); b.setUint32(8, tid, true);
+      params.forEach((p, i) => b.setUint32(12 + 4 * i, p >>> 0, true));
+      const r = await this.dev.transferOut(this.outEp, b.buffer);
+      if (r.status !== "ok") throw new Error(`transferOut ${r.status}`);
+      return tid;
+    }
+
+    async readContainer() {  // one full container (header + payload); skips zero-length packets
+      let parts = [], got = 0, total = null, empty = 0;
+      for (;;) {
+        const r = await this.dev.transferIn(this.inEp, this.chunk);
+        if (r.status === "stall") { await this.dev.clearHalt("in", this.inEp); throw new Error("endpoint stalled"); }
+        if (r.status !== "ok") throw new Error(`transferIn ${r.status}`);
+        const n = r.data.byteLength;
+        if (!n) {  // zero-length packet: terminator, or nothing queued yet
+          if (total !== null) break;
+          if (++empty > 50) throw new Error("no response from device");
+          await new Promise((res) => setTimeout(res, 20));
+          continue;
+        }
+        parts.push(new Uint8Array(r.data.buffer, r.data.byteOffset, n)); got += n;
+        if (total === null) total = r.data.getUint32(0, true);
+        if (got >= total) break;
+      }
+      const all = new Uint8Array(got); let o = 0; for (const p of parts) { all.set(p, o); o += p.length; }
+      const v = new DataView(all.buffer);
+      return { type: v.getUint16(4, true), code: v.getUint16(6, true), tid: v.getUint32(8, true), buf: all.buffer };
+    }
+
+    // Run an operation; returns { code, params, data(ArrayBuffer|null) }.
+    async op(code, params = [], { allow = [] } = {}) {
+      const tid = await this.send(code, params);
+      let data = null, c;
+      for (;;) {
+        c = await this.readContainer();
+        if (c.tid !== tid && c.type !== TYPE.Event) { log(`  ignoring container tid ${c.tid} (want ${tid})`); continue; }
+        if (c.type === TYPE.Data) { data = c.buf.slice(12); continue; }
+        if (c.type === TYPE.Response) break;
+      }
+      const rv = new Reader(c.buf, 12), rparams = [];
+      while (rv.o + 4 <= c.buf.byteLength) rparams.push(rv.u32());
+      if (c.code !== RC.OK && !allow.includes(c.code)) throw new Error(`MTP op ${hex(code)} failed: response ${hex(c.code)}`);
+      return { code: c.code, params: rparams, data };
+    }
+
+    async openSession() {
+      const r = await this.op(OP.OpenSession, [1], { allow: [RC.SessionAlreadyOpen] });
+      this.sessionOpen = true;
+      log(`OpenSession -> ${hex(r.code)}`);
+    }
+
+    async deviceInfo() {
+      const r = new Reader((await this.op(OP.GetDeviceInfo)).data);
+      const info = { standard: r.u16(), vendorExt: r.u32(), vendorExtVer: r.u16(), vendorExtDesc: r.str(), mode: r.u16() };
+      info.ops = r.arr16(); r.arr16(); r.arr16(); r.arr16(); r.arr16();
+      info.manufacturer = r.str(); info.model = r.str(); info.version = r.str(); info.serial = r.str();
+      return info;
+    }
+
+    async storageIds() { return new Reader((await this.op(OP.GetStorageIDs)).data).arr32(); }
+
+    async storageInfo(id) {
+      const r = new Reader((await this.op(OP.GetStorageInfo, [id])).data);
+      const s = { type: r.u16(), fs: r.u16(), access: r.u16(), max: r.u64(), free: r.u64(), freeObjects: r.u32() };
+      s.desc = r.str(); s.label = r.str();
+      return s;
+    }
+
+    async handles(storage, parent) { return new Reader((await this.op(OP.GetObjectHandles, [storage, 0, parent])).data).arr32(); }
+
+    async objectInfo(h) {
+      const r = new Reader((await this.op(OP.GetObjectInfo, [h])).data);
+      const o = { storage: r.u32(), format: r.u16(), protection: r.u16(), size: r.u32() };
+      r.o = 38; o.parent = r.u32(); r.o = 52; o.name = r.str();
+      if (o.size === 0xffffffff) o.size = null;   // > 4 GB: unknown without GetObjectPropValue
+      o.isDir = o.format === FMT_ASSOCIATION;
+      o.handle = h;
+      return o;
+    }
+
+    async list(storage, parent) {
+      const out = [];
+      for (const h of await this.handles(storage, parent)) out.push(await this.objectInfo(h));
+      return out.sort((a, b) => (b.isDir - a.isDir) || a.name.localeCompare(b.name));
+    }
+
+    async close() {
+      if (this.sessionOpen) try { await this.op(OP.CloseSession); } catch (_) { /* ignore */ }
+      if (this.iface !== undefined) try { await this.dev.releaseInterface(this.iface); } catch (_) { /* ignore */ }
+      try { await this.dev.close(); } catch (_) { /* ignore */ }
+    }
+  }
+
+  // ---------- UI flow ----------
+  let mtp = null, storages = [];
+
+  function explain(e) {
+    const m = String(e && e.message || e);
+    const plat = (navigator.userAgentData?.platform || navigator.platform || "").toLowerCase();
+    if (/claim|Unable to claim|access denied|SecurityError|Access denied/i.test(m)) {
+      if (plat.includes("win")) return "Windows has claimed the device for its own MTP driver, so the browser cannot access it. Expected on Windows; use File Explorer for now.";
+      if (plat.includes("mac")) return "Another program holds the device. Quit Garmin Express, OpenMTP and Android File Transfer, unplug, replug, retry.";
+      return "Another program holds the device (gvfs / KDE MTP) or permissions are missing. Unmount it in the file manager or add the udev rule above, unplug, replug, retry.";
+    }
+    if (/No interface/.test(m)) return m + " Check the device's USB mode setting (System → USB Mode → MTP).";
+    if (/NotFoundError|No device selected/i.test(m)) return "No device selected.";
+    return m;
+  }
+
+  $("#connect").addEventListener("click", async () => {
+    status("", "");
+    let dev;
+    try {
+      const filters = $("#all-vendors").checked ? [] : [{ vendorId: GARMIN_VID }];
+      dev = await navigator.usb.requestDevice({ filters });
+    } catch (e) { status("warn", esc(explain(e))); return; }
+    log(`device: ${dev.manufacturerName || "?"} / ${dev.productName || "?"} vid ${hex(dev.vendorId)} pid ${hex(dev.productId)} usb ${dev.usbVersionMajor}.${dev.usbVersionMinor}`);
+    $("#connect").disabled = true;
+    status("info", "Connecting…");
+    mtp = new Mtp(dev);
+    try {
+      await mtp.open();
+      await mtp.openSession();
+      const info = await mtp.deviceInfo();
+      const masked = info.serial ? info.serial.slice(0, 3) + "…" + info.serial.slice(-2) : "";
+      log(`deviceinfo: ${info.manufacturer} | ${info.model} | fw ${info.version} | serial ${masked} | ext ${hex(info.vendorExt, 8)} "${info.vendorExtDesc}" | ${info.ops.length} ops`);
+      $("#devinfo").innerHTML = `
+        <dt>Manufacturer</dt><dd>${esc(info.manufacturer)}</dd>
+        <dt>Model</dt><dd>${esc(info.model)}</dd>
+        <dt>Firmware</dt><dd>${esc(info.version)}</dd>
+        <dt>USB IDs</dt><dd>${hex(dev.vendorId)}:${hex(dev.productId)}</dd>
+        <dt>MTP extension</dt><dd>${esc(info.vendorExtDesc || "—")}</dd>`;
+
+      storages = [];
+      for (const id of await mtp.storageIds()) {
+        const s = await mtp.storageInfo(id); s.id = id; storages.push(s);
+        log(`storage ${hex(id, 8)}: "${s.desc}" "${s.label}" max ${fmtSize(s.max)} free ${fmtSize(s.free)}`);
+      }
+      $("#storages tbody").innerHTML = storages.map((s) =>
+        `<tr><td>${esc(s.desc || s.label || hex(s.id, 8))}</td><td class="num">${fmtSize(s.max)}</td><td class="num">${fmtSize(s.free)}</td></tr>`).join("");
+
+      const rows = await scanGarmin();
+      renderFiles(rows);
+      $("#result").classList.remove("hidden");
+      $("#disconnect").disabled = false;
+      const maps = rows.filter((r) => !r.isDir && MAP_EXT.test(r.name)).length;
+      status("good", `<strong>Works.</strong> ${esc(info.model)} read over WebUSB: ${maps} map file(s) found. Please copy the report below and share it.`);
+      log(`RESULT: OK, ${rows.length} entries, ${maps} map files`);
+    } catch (e) {
+      log(`ERROR: ${e && e.name ? e.name + ": " : ""}${e && e.message || e}`);
+      log("RESULT: FAILED");
+      status("bad", `<strong>Failed.</strong> ${esc(explain(e))}`);
+      await mtp.close(); mtp = null;
+      $("#connect").disabled = false;
+    }
+  });
+
+  async function scanGarmin() {
+    const rows = [];
+    for (const s of storages) {
+      const prefix = storages.length > 1 ? `[${s.desc || hex(s.id, 8)}] ` : "";
+      const root = await mtp.list(s.id, ROOT);
+      log(`root of ${hex(s.id, 8)}: ${root.map((o) => o.name + (o.isDir ? "/" : "")).join(", ")}`);
+      const garmin = root.find((o) => o.isDir && o.name.toLowerCase() === "garmin");
+      if (!garmin) { log("  no Garmin/ folder in this storage"); continue; }
+      const g = await mtp.list(s.id, garmin.handle);
+      for (const o of g) {
+        rows.push({ ...o, path: `${prefix}${garmin.name}/${o.name}${o.isDir ? "/" : ""}` });
+        if (o.isDir && /^(maps|custommaps)$/i.test(o.name)) {
+          for (const c of await mtp.list(s.id, o.handle)) rows.push({ ...c, path: `${prefix}${garmin.name}/${o.name}/${c.name}${c.isDir ? "/" : ""}` });
+        }
+      }
+    }
+    rows.filter((r) => !r.isDir && MAP_EXT.test(r.name)).forEach((r) => log(`map: ${r.path} ${fmtSize(r.size)}`));
+    return rows;
+  }
+
+  function renderFiles(rows) {
+    $("#files tbody").innerHTML = rows.length ? rows.map((r) => {
+      const isMap = !r.isDir && MAP_EXT.test(r.name);
+      return `<tr class="${isMap ? "map" : ""}"><td>${esc(r.path)}</td><td class="num">${r.isDir ? "" : fmtSize(r.size)}</td></tr>`;
+    }).join("") : '<tr><td colspan="2">No Garmin/ folder found.</td></tr>';
+  }
+
+  $("#scan-more").addEventListener("click", async () => {
+    if (!mtp) return;
+    const btn = $("#scan-more"); btn.disabled = true;
+    try {
+      const extra = [];
+      for (const s of storages) for (const o of await mtp.list(s.id, ROOT)) extra.push({ ...o, path: o.name + (o.isDir ? "/" : "") });
+      const tb = $("#files tbody");
+      tb.insertAdjacentHTML("beforeend", extra.map((r) => `<tr><td>${esc(r.path)}</td><td class="num">${r.isDir ? "" : fmtSize(r.size)}</td></tr>`).join(""));
+    } catch (e) { log(`ERROR (root scan): ${e.message}`); status("bad", esc(explain(e))); }
+  });
+
+  $("#disconnect").addEventListener("click", async () => {
+    if (mtp) await mtp.close();
+    mtp = null; log("disconnected");
+    $("#connect").disabled = false; $("#disconnect").disabled = true;
+  });
+
+  $("#copy").addEventListener("click", () => {
+    navigator.clipboard.writeText(logLines.join("\n")).then(() => {
+      $("#copy").textContent = "Copied"; setTimeout(() => ($("#copy").textContent = "Copy report"), 1500);
+    });
+  });
+
+  navigator.usb?.addEventListener("disconnect", (e) => {
+    if (mtp && e.device === mtp.dev) { log("device unplugged"); mtp = null; $("#connect").disabled = false; $("#disconnect").disabled = true; }
+  });
+})();
+</script>
+</body>
+</html>
