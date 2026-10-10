@@ -1,31 +1,54 @@
-# Swisstopo for Garmin watches
+# Switzerland on your wrist 🇨🇭⌚
 
-Pre-built Custom Maps (KMZ) packs of Switzerland for the **Epix 2 / Epix Pro / Fenix 7 Pro / Fenix 8** family. Open-source Swisstopo data, packaged so it fits inside the watch's firmware tile cap.
+Real Swiss maps on your Garmin. Free, open data, ready to drop onto your watch.
 
-## Get started
+Pick your adventure:
 
-- **[Install guide](https://joepvde.github.io/garminswisstopo-public/install.html)** - step-by-step, beginner-friendly.
-- **[GPX picker](https://joepvde.github.io/garminswisstopo-public/gpx_pack_picker.html)** - drop a GPX, get download links for the right zones.
-- **[Tile picker](https://joepvde.github.io/garminswisstopo-public/tile_picker.html)** - paint your own area or auto-select from a tour GPX, then either download the touching pre-built zones or request a custom build (5 builds/email/month).
+| | 🧭 **Navigate anywhere** | 🏔️ **See the terrain like a local** |
+|---|---|---|
+| What | A smooth, routable vector map of the whole country | The iconic swisstopo LK25 paper map, on your watch |
+| Best for | Getting from A to B: trailheads, huts, villages, the bakery | Ski touring and hiking: slope shading, graded routes |
+| On the watch | Turn-by-turn directions, address & POI search, auto-rerouting | Pixel-perfect swisstopo cartography |
+| Made for | **fēnix 9 Pro**, **Edge 1050** | Epix 2 / Epix Pro / fēnix 7 Pro / fēnix 8 |
+| Start here | **[Get the routable map →](https://progressive-kiwi.github.io/garminswisstopo-public/routable.html)** | **[Find your region →](https://progressive-kiwi.github.io/garminswisstopo-public/gpx_pack_picker.html)** |
 
-Browse pre-built downloads under [Releases](../../releases).
+---
 
-## Routable vector map (fenix 9 Pro, Edge 1050)
+## 🧭 The routable map
 
-- **[Routable map builder + install guide](https://joepvde.github.io/garminswisstopo-public/routable.html)**: whole-Switzerland `.img` (prebuilt, ~300 MB) or a custom area build kit. Turn-by-turn routing and address search on the device; no tile cap; no hillshading or trail overlay.
-- Pipeline and review notes: [docs/ROUTABLE.md](docs/ROUTABLE.md).
+One file. The whole of Switzerland. About 300 MB, a rounding error on a 64 GB watch.
 
-## What you get on the watch
+- **Ask it the way.** Type an address, a hut, a summit or a train station; the watch plots the route and guides you there turn by turn.
+- **Wander off, it follows.** Miss a turn and it reroutes on the spot, no phone needed.
+- **Buttery zooming.** Seven detail levels: house numbers up close, the whole canton at a glance, smooth in between.
+- **Your area, your way.** Want just the Engadin, or exactly the region your GPX touches? Draw it on the map and get a ready-to-run build kit.
+- **Fresh every month.** Rebuilt automatically from the latest OpenStreetMap data.
 
-Either:
+The [web app](https://progressive-kiwi.github.io/garminswisstopo-public/routable.html) walks you through everything, from download to first route, with instructions for your exact device and computer.
 
-- **Winter ski-touring**: LK25 Winter raster (Swisstopo) + 4-class slope shading + SAC ski tours coloured by difficulty (blue / red / black).
-- **Summer hiking**: LK25 Summer raster + slope shading + Wanderwege coloured by category (yellow / red / blue for Wanderweg / Bergwanderweg / Alpinwanderweg).
+> Heads-up: the fēnix 9 has a brand-new map engine and third-party maps on it are still new territory. Try a small area first, and tell us how it goes!
 
-## Slope shading is advisory only
+## 🏔️ The swisstopo packs
 
-Derived from the swissALTI3D 10 m DEM. Class boundaries follow the official SLF `ch.swisstopo.hangneigung-ueber_30` product, but no warranty is given for any individual pixel. **The slope overlay does NOT replace the daily SLF avalanche bulletin or on-site judgement.** Use at your own risk; backcountry skiing has inherent risks including death.
+The map every Swiss hiker grew up with, with extras on top:
+
+- **Winter ski touring**: LK25 Winter + 4-class slope shading + SAC ski tours coloured by difficulty (blue / red / black).
+- **Summer hiking**: LK25 Summer + slope shading + hiking trails coloured by category (yellow / red / blue).
+
+Tools to get the right pack:
+
+- **[GPX picker](https://progressive-kiwi.github.io/garminswisstopo-public/gpx_pack_picker.html)**: drop your tour, get the download links.
+- **[Tile picker](https://progressive-kiwi.github.io/garminswisstopo-public/tile_picker.html)**: paint your own area and have a custom pack built.
+- **[Install guide](https://progressive-kiwi.github.io/garminswisstopo-public/install.html)**: ten minutes, no special software.
+
+## ⚠️ Stay safe out there
+
+Slope shading is derived from the swissALTI3D 10 m elevation model, following the official SLF `hangneigung-ueber_30` classes, but no individual pixel is guaranteed. **It does not replace the daily SLF avalanche bulletin or your own judgement on the ground.** Routing is a helper, not a guide: check closures, conditions and common sense. Backcountry travel carries real risk, including death.
 
 ## Data and licensing
 
-All cartographic content comes from Swisstopo open government data - see [swisstopo.admin.ch/en/free-geodata](https://www.swisstopo.admin.ch/en/free-geodata).
+- swisstopo packs: [swisstopo open government data](https://www.swisstopo.admin.ch/en/free-geodata).
+- Routable map: © [OpenStreetMap contributors](https://www.openstreetmap.org/copyright), ODbL. Compiled with [mkgmap](https://www.mkgmap.org.uk/).
+- Downloads live under [Releases](../../releases). Behind-the-scenes notes for the routable map: [docs/ROUTABLE.md](docs/ROUTABLE.md).
+
+Not affiliated with Garmin or swisstopo. Built by people who'd rather be outside.
