@@ -119,4 +119,4 @@ java -Xmx"$JAVA_XMX" -jar "$MKGMAP_DIR/mkgmap.jar" \
 mkdir -p "$(dirname "$OUT")"
 mv "$WORK/img/gmapsupp.img" "$OUT"
 log "done: $OUT ($(du -h "$OUT" | cut -f1))"
-echo "Copy it to Garmin/ on the device (see tools/routable.html, step 4)."
+echo "Copy it to Garmin/ on the device (see tools/app.html#routable, step 4)."

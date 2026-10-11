@@ -468,7 +468,7 @@
       </h1>
       <p class="lead" data-i18n="hero.lead">Pre-built map packs of Switzerland for Garmin watches. LK25 raster cartography with a slope-shading and ski/hiking route overlay, sized to fit your watch's tile limit.</p>
       <div class="cta-row">
-        <a class="btn btn-primary" href="gpx_pack_picker.html"><span data-i18n="hero.cta_picker">Find maps for my tour</span> →</a>
+        <a class="btn btn-primary" href="app.html"><span data-i18n="hero.cta_picker">Find maps for my tour</span> →</a>
         <a class="btn btn-ghost" href="install.html" data-i18n="hero.cta_install">How to install</a>
       </div>
     </div>
@@ -543,21 +543,21 @@
     <h2 data-i18n="pick.heading">Two ways to find the right pack</h2>
     <p class="section-lead" data-i18n="pick.lead">Not sure which of the 31 regions covers your destination? Pick the workflow that fits.</p>
     <div class="pick-grid" style="grid-template-columns: 1fr;">
-      <a class="pick" href="gpx_pack_picker.html" style="display:grid; grid-template-columns: auto 1fr; gap: 1rem; align-items: start;">
+      <a class="pick" href="app.html#region" style="display:grid; grid-template-columns: auto 1fr; gap: 1rem; align-items: start;">
         <div class="pick-icon" style="margin: 0;">📍</div>
         <div>
-          <h3 data-i18n="pick.gpx_title">Drop your GPX (or browse the map)</h3>
-          <p data-i18n="pick.gpx_desc">Drop a tour file (from SchweizMobil, Komoot, Strava, etc.) and we'll tell you which regional pack covers it, usually a single file. No GPX? Open the picker and you can see all 31 regions on a swisstopo basemap and download the one you need.</p>
+          <h3 data-i18n="pick.gpx_title">Click your region (or search a place)</h3>
+          <p data-i18n="pick.gpx_desc">All 31 regions on a swisstopo basemap. Click the one you need, or type a place name, and download its pack, usually a single zip.</p>
         </div>
       </a>
-      <a class="pick" href="tile_picker.html" style="display:grid; grid-template-columns: auto 1fr; gap: 1rem; align-items: start;">
+      <a class="pick" href="app.html#custom" style="display:grid; grid-template-columns: auto 1fr; gap: 1rem; align-items: start;">
         <div class="pick-icon" style="margin: 0;">🎨</div>
         <div>
           <h3 data-i18n="pick.custom_title">Paint a custom area</h3>
           <p data-i18n="pick.custom_desc">Going somewhere that crosses two regions, or want a single pack focused on the spots you actually visit? Draw the area you need. We build a custom pack and email it to you, usually within an hour, occasionally longer when the build queue is busy.</p>
         </div>
       </a>
-      <a class="pick" href="routable.html" style="display:grid; grid-template-columns: auto 1fr; gap: 1rem; align-items: start;">
+      <a class="pick" href="app.html#routable" style="display:grid; grid-template-columns: auto 1fr; gap: 1rem; align-items: start;">
         <div class="pick-icon" style="margin: 0;">🧭</div>
         <div>
           <h3>Routable vector map (fēnix 9 Pro, Edge 1050)</h3>
@@ -578,7 +578,7 @@
           <li data-i18n="pc.pros.2">4-class slope-shading overlay (≥30°, ≥35°, ≥40°, ≥45°) for backcountry awareness.</li>
           <li data-i18n="pc.pros.3">Ski tours coloured by SAC difficulty, hiking trails coloured by category.</li>
           <li data-i18n="pc.pros.4">Works fully offline once copied to the watch.</li>
-          <li data-i18n="pc.pros.5">Pick a region by GPX or name, or paint a custom area.</li>
+          <li data-i18n="pc.pros.5">Pick a region on the map or by place name, or paint a custom area.</li>
         </ul>
       </div>
       <div class="pc cons">
@@ -607,7 +607,7 @@
     <div class="watches-grid">
       <details class="w-yes">
         <summary>✓ <span data-i18n="watches.standard_title">Standard regional packs work</span></summary>
-        <p class="w-sub" data-i18n="watches.standard_desc">Tile cap ≈ 500. Pick any region from the GPX picker and copy the .kmz files across.</p>
+        <p class="w-sub" data-i18n="watches.standard_desc">Tile cap ≈ 500. Pick any region in the map app and copy the .kmz files across.</p>
         <ul>
           <li>Epix 2 (Gen 2), Epix Pro 42 / 47 / 51 mm</li>
           <li>Fenix 8 (43 / 47 / 51 mm AMOLED, Solar MIP)</li>
@@ -698,8 +698,8 @@
       "zones.legend_gap": "No pre-built pack — use the custom-area picker",
       "pick.heading": "Two ways to find the right pack",
       "pick.lead": "Not sure which of the 31 regions covers your destination? Pick the workflow that fits.",
-      "pick.gpx_title": "Drop your GPX (or browse the map)",
-      "pick.gpx_desc": "Drop a tour file (from SchweizMobil, Komoot, Strava, etc.) and we'll tell you which regional pack covers it, usually a single file. No GPX? Open the picker and you can see all 31 regions on a swisstopo basemap and download the one you need.",
+      "pick.gpx_title": "Click your region (or search a place)",
+      "pick.gpx_desc": "All 31 regions on a swisstopo basemap. Click the one you need, or type a place name, and download its pack, usually a single zip.",
       "pick.custom_title": "Paint a custom area",
       "pick.custom_desc": "Going somewhere that crosses two regions, or want a single pack focused on the spots you actually visit? Draw the area you need. We build a custom pack and email it to you, usually within an hour, occasionally longer when the build queue is busy.",
       "pc.heading": "Advantages and limitations",
@@ -709,7 +709,7 @@
       "pc.pros.2": "4-class slope-shading overlay (≥30°, ≥35°, ≥40°, ≥45°) for backcountry awareness.",
       "pc.pros.3": "Ski tours coloured by SAC difficulty, hiking trails coloured by category.",
       "pc.pros.4": "Works fully offline once copied to the watch.",
-      "pc.pros.5": "Pick a region by GPX or name, or paint a custom area.",
+      "pc.pros.5": "Pick a region on the map or by place name, or paint a custom area.",
       "pc.cons_title": "What to know first",
       "pc.cons.1": "The watch can only show one regional pack at a time. If your next outing is in a different region, you swap before you go.",
       "pc.cons.2": "Swapping happens by plugging the watch into a computer over USB. There's no in-watch toggle for individual map packs.",
@@ -721,7 +721,7 @@
       "watches.heading": "Which Garmin devices does this work on?",
       "watches.lead": "Garmin's Custom Maps feature has a tile-count limit baked into the firmware, per device. The published regional packs target the 500-tile tier. If your device has a smaller cap, use the custom-area picker to paint a tighter zone.",
       "watches.standard_title": "Standard regional packs work",
-      "watches.standard_desc": "Tile cap ≈ 500. Pick any region from the GPX picker and copy the .kmz files across.",
+      "watches.standard_desc": "Tile cap ≈ 500. Pick any region in the map app and copy the .kmz files across.",
       "watches.custom_title": "Custom area required (small tile cap)",
       "watches.custom_desc": "Tile cap 100–250. A full region won't fit. Paint a small area around your tours and we email a tile-trimmed pack.",
       "watches.unsupported_title": "Not supported",
@@ -762,8 +762,8 @@
       "zones.legend_gap": "Kein vorgefertigtes Paket — nutz den Bereichs-Picker",
       "pick.heading": "Zwei Wege, das passende Paket zu finden",
       "pick.lead": "Du weisst nicht, welche der 31 Regionen dein Ziel abdeckt? Wähl den Weg, der zu dir passt.",
-      "pick.gpx_title": "GPX hochladen (oder Karte durchstöbern)",
-      "pick.gpx_desc": "Zieh eine Tourdatei rein (aus SchweizMobil, Komoot, Strava, etc.) und wir sagen dir, welches Regionalpaket sie abdeckt, meistens eine einzige Datei. Kein GPX zur Hand? Im Picker siehst du alle 31 Regionen auf einer swisstopo-Karte und lädst die richtige direkt herunter.",
+      "pick.gpx_title": "Region anklicken (oder Ort suchen)",
+      "pick.gpx_desc": "Alle 31 Regionen auf einer swisstopo-Karte. Klick die gewünschte an oder tipp einen Ortsnamen ein und lade ihr Paket, meistens ein einziges Zip.",
       "pick.custom_title": "Eigenes Gebiet zeichnen",
       "pick.custom_desc": "Deine Tour liegt zwischen zwei Regionen, oder du willst ein einziges Paket genau für die Orte, an die du wirklich gehst? Zeichne das Gebiet selber. Wir bauen ein eigenes Paket und schicken es dir per Mail, meist innerhalb einer Stunde, bei hoher Auslastung auch etwas länger.",
       "pc.heading": "Vorteile und Einschränkungen",
@@ -773,7 +773,7 @@
       "pc.pros.2": "4-stufiges Hangneigungs-Overlay (≥30°, ≥35°, ≥40°, ≥45°) für Lawinen-Awareness im Gelände.",
       "pc.pros.3": "Skitouren nach SAC-Schwierigkeit gefärbt, Wanderwege nach Kategorie.",
       "pc.pros.4": "Funktioniert offline, sobald die Dateien auf der Uhr sind.",
-      "pc.pros.5": "Region per GPX oder Namen wählen, oder eigenes Gebiet zeichnen.",
+      "pc.pros.5": "Region auf der Karte oder per Ortsname wählen, oder eigenes Gebiet zeichnen.",
       "pc.cons_title": "Was du wissen solltest",
       "pc.cons.1": "Die Uhr zeigt immer nur ein Regionalpaket aufs Mal. Wenn deine nächste Tour in einer anderen Region liegt, wechselst du vorher.",
       "pc.cons.2": "Der Wechsel passiert per USB am Computer. Es gibt keine Menüoption auf der Uhr, um einzelne Karten an-/auszuschalten.",
@@ -785,7 +785,7 @@
       "watches.heading": "Auf welchen Garmin-Geräten läuft das?",
       "watches.lead": "Garmins Custom-Maps-Funktion hat ein gerätespezifisches Kachel-Limit in der Firmware. Die fertigen Regionalpakete sind auf die 500-Kachel-Klasse ausgelegt. Hat dein Gerät eine kleinere Grenze, zeichne mit dem Picker ein engeres Gebiet.",
       "watches.standard_title": "Standard-Regionalpakete laufen",
-      "watches.standard_desc": "Kachel-Limit ≈ 500. Wähl eine Region im GPX-Picker und kopier die .kmz-Dateien rüber.",
+      "watches.standard_desc": "Kachel-Limit ≈ 500. Wähl eine Region in der Karten-App und kopier die .kmz-Dateien rüber.",
       "watches.custom_title": "Eigenes Gebiet nötig (kleines Kachel-Limit)",
       "watches.custom_desc": "Kachel-Limit 100–250. Eine ganze Region passt nicht. Zeichne ein kleines Gebiet um deine Touren, wir mailen dir ein passendes Paket.",
       "watches.unsupported_title": "Nicht unterstützt",
@@ -826,8 +826,8 @@
       "zones.legend_gap": "Pas de pack pré-construit — utilise le sélecteur personnalisé",
       "pick.heading": "Deux façons de trouver le bon pack",
       "pick.lead": "Tu ne sais pas laquelle des 31 régions couvre ta destination ? Choisis la méthode qui te convient.",
-      "pick.gpx_title": "Déposer ton GPX (ou parcourir la carte)",
-      "pick.gpx_desc": "Dépose un fichier de tour (SuisseMobile, Komoot, Strava, etc.) et on te dit quel pack régional le couvre, en général un seul fichier. Pas de GPX ? Ouvre le sélecteur, tu verras les 31 régions sur fond swisstopo et tu télécharges celle qu'il te faut.",
+      "pick.gpx_title": "Clique ta région (ou cherche un lieu)",
+      "pick.gpx_desc": "Les 31 régions sur un fond swisstopo. Clique celle qu'il te faut, ou tape un nom de lieu, et télécharge son pack, en général un seul zip.",
       "pick.custom_title": "Dessiner une zone sur mesure",
       "pick.custom_desc": "Ta sortie est à cheval sur deux régions, ou tu veux un seul pack centré sur les lieux que tu fréquentes vraiment ? Dessine ta zone. On construit un pack personnalisé et on te l'envoie par mail, généralement en moins d'une heure, parfois davantage quand la file d'attente est chargée.",
       "pc.heading": "Avantages et limites",
@@ -837,7 +837,7 @@
       "pc.pros.2": "Overlay d'ombrage des pentes en 4 classes (≥30°, ≥35°, ≥40°, ≥45°) pour la conscience du terrain.",
       "pc.pros.3": "Itinéraires de ski colorés selon la difficulté CAS, chemins de rando selon la catégorie.",
       "pc.pros.4": "Fonctionne hors-ligne une fois les fichiers copiés sur la montre.",
-      "pc.pros.5": "Choisis une région avec un GPX ou un nom, ou dessine ta propre zone.",
+      "pc.pros.5": "Choisis une région sur la carte ou par nom de lieu, ou dessine ta propre zone.",
       "pc.cons_title": "À savoir avant de commencer",
       "pc.cons.1": "La montre n'affiche qu'un pack régional à la fois. Si ta prochaine sortie est dans une région différente, tu en changes avant de partir.",
       "pc.cons.2": "Le changement se fait en branchant la montre à un ordinateur via USB. Pas de bascule dans le menu de la montre pour activer un pack individuel.",
@@ -849,7 +849,7 @@
       "watches.heading": "Sur quelles montres Garmin ça marche ?",
       "watches.lead": "La fonction Custom Maps de Garmin a une limite de tuiles ancrée dans le firmware, propre à chaque appareil. Les packs régionaux publiés visent la classe 500 tuiles. Si ton appareil a un plafond plus bas, dessine une zone plus serrée avec le sélecteur.",
       "watches.standard_title": "Les packs régionaux standards fonctionnent",
-      "watches.standard_desc": "Plafond ≈ 500 tuiles. Choisis n'importe quelle région avec le sélecteur GPX et copie les .kmz.",
+      "watches.standard_desc": "Plafond ≈ 500 tuiles. Choisis n'importe quelle région dans l'appli carte et copie les .kmz.",
       "watches.custom_title": "Zone sur mesure requise (plafond bas)",
       "watches.custom_desc": "Plafond 100–250 tuiles. Une région complète ne tient pas. Dessine une petite zone autour de tes sorties et on t'envoie un pack ajusté.",
       "watches.unsupported_title": "Non supporté",
@@ -886,8 +886,8 @@
       "zones.legend_gap": "Nessun pacchetto pre-costruito — usa il selettore personalizzato",
       "pick.heading": "Due modi per trovare il pacchetto giusto",
       "pick.lead": "Non sai quale delle 31 regioni copre la tua destinazione? Scegli il metodo che preferisci.",
-      "pick.gpx_title": "Carica il tuo GPX (o sfoglia la mappa)",
-      "pick.gpx_desc": "Trascina un file del giro (SvizzeraMobile, Komoot, Strava, ecc.) e ti diciamo quale pacchetto regionale lo copre, di solito un solo file. Niente GPX? Apri il selettore: vedi tutte le 31 regioni su base swisstopo e scarichi quella che ti serve.",
+      "pick.gpx_title": "Clicca la tua regione (o cerca un luogo)",
+      "pick.gpx_desc": "Tutte le 31 regioni su una mappa swisstopo. Clicca quella che ti serve, o scrivi il nome di un luogo, e scarica il suo pacchetto, di solito un solo zip.",
       "pick.custom_title": "Disegna un'area su misura",
       "pick.custom_desc": "Il tuo giro è a cavallo tra due regioni, o vuoi un pacchetto unico centrato sui posti che frequenti davvero? Disegna la zona che ti serve. Costruiamo un pacchetto personalizzato e te lo inviamo via mail, di solito entro un'ora, a volte di più nei momenti di code lunghe.",
       "pc.heading": "Vantaggi e limiti",
@@ -897,7 +897,7 @@
       "pc.pros.2": "Overlay di ombreggiatura pendenze in 4 classi (≥30°, ≥35°, ≥40°, ≥45°) per la consapevolezza in fuoripista.",
       "pc.pros.3": "Itinerari sci colorati per difficoltà CAS, sentieri per categoria.",
       "pc.pros.4": "Funziona offline una volta copiati i file sull'orologio.",
-      "pc.pros.5": "Scegli una regione tramite GPX o nome, oppure disegna la tua zona.",
+      "pc.pros.5": "Scegli una regione sulla mappa o per nome del luogo, oppure disegna la tua zona.",
       "pc.cons_title": "Cosa sapere prima",
       "pc.cons.1": "L'orologio mostra un solo pacchetto regionale alla volta. Se la prossima uscita è in una regione diversa, lo cambi prima di partire.",
       "pc.cons.2": "Il cambio avviene collegando l'orologio al computer via USB. Non c'è un interruttore nel menu dell'orologio per i singoli pacchetti.",
@@ -909,7 +909,7 @@
       "watches.heading": "Su quali dispositivi Garmin funziona?",
       "watches.lead": "La funzione Custom Maps di Garmin ha un limite di tile fissato nel firmware, per dispositivo. I pacchetti regionali pubblicati sono dimensionati per la classe 500 tile. Se il tuo dispositivo ha un tetto più basso, disegna una zona più ristretta col selettore.",
       "watches.standard_title": "I pacchetti regionali standard funzionano",
-      "watches.standard_desc": "Limite ≈ 500 tile. Scegli una regione dal selettore GPX e copia i file .kmz.",
+      "watches.standard_desc": "Limite ≈ 500 tile. Scegli una regione nell'app mappa e copia i file .kmz.",
       "watches.custom_title": "Serve un'area su misura (limite basso)",
       "watches.custom_desc": "Limite 100–250 tile. Una regione intera non entra. Disegna una piccola zona attorno ai tuoi giri e ti inviamo un pacchetto su misura.",
       "watches.unsupported_title": "Non supportato",

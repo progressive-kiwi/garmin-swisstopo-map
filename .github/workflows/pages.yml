@@ -2,7 +2,7 @@
 #
 # On every push to main:
 #   1. Inject window.GSST_BUILD_API from the GSST_BUILD_API repo secret into
-#      tile_picker.html so the hosted-build button hits the real Worker URL.
+#      app.html so the custom-area build button hits the real Worker URL.
 #      Without the secret the picker shows the "hosted build not configured"
 #      message instead of POSTing into the void.
 #   2. Upload the tools/ directory as the Pages artifact.
@@ -41,7 +41,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Inject the hosted build-API URL if configured. The picker reads
+      # Inject the hosted build-API URL if configured. app.html reads
       # window.GSST_BUILD_API at runtime; if absent => "hosted build not
       # configured" message.
       - name: Inject build API URL
@@ -52,7 +52,7 @@ jobs:
             echo "Injecting GSST_BUILD_API = $GSST_BUILD_API"
             python - <<'PY'
           import os, re, pathlib
-          p = pathlib.Path("tools/tile_picker.html")
+          p = pathlib.Path("tools/app.html")
           url = os.environ["GSST_BUILD_API"].rstrip("/")
           html = p.read_text(encoding="utf-8")
           tag = f'<script>window.GSST_BUILD_API = "{url}";</script>'
@@ -64,7 +64,7 @@ jobs:
             echo "No GSST_BUILD_API secret set -- picker will show offline-only path."
           fi
 
-      # routable.html fetches the build script + mkgmap options to assemble
+      # app.html (routable mode) fetches the build script + mkgmap options to assemble
       # its build-kit zip; publish them next to the page.
       - name: Copy routable build kit sources
         run: cp -r routable tools/routable

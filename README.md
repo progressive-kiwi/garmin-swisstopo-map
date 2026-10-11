@@ -10,7 +10,7 @@ Pick your adventure:
 | Best for | Getting from A to B: trailheads, huts, villages, the bakery | Ski touring and hiking: slope shading, graded routes |
 | On the watch | Turn-by-turn directions, address & POI search, auto-rerouting | Pixel-perfect swisstopo cartography |
 | Made for | **fēnix 9 Pro**, **Edge 1050** | Epix 2 / Epix Pro / fēnix 7 Pro / fēnix 8 |
-| Start here | **[Get the routable map →](https://progressive-kiwi.github.io/garminswisstopo-public/routable.html)** | **[Find your region →](https://progressive-kiwi.github.io/garminswisstopo-public/gpx_pack_picker.html)** |
+| Start here | **[Get the routable map →](https://progressive-kiwi.github.io/garminswisstopo-public/app.html#routable)** | **[Find your region →](https://progressive-kiwi.github.io/garminswisstopo-public/app.html#region)** |
 
 ---
 
@@ -21,10 +21,10 @@ One file. The whole of Switzerland. About 300 MB, a rounding error on a 64 GB wa
 - **Ask it the way.** Type an address, a hut, a summit or a train station; the watch plots the route and guides you there turn by turn.
 - **Wander off, it follows.** Miss a turn and it reroutes on the spot, no phone needed.
 - **Buttery zooming.** Seven detail levels: house numbers up close, the whole canton at a glance, smooth in between.
-- **Your area, your way.** Want just the Engadin, or exactly the region your GPX touches? Draw it on the map and get a ready-to-run build kit.
+- **Your area, your way.** Want just the Engadin, or a box around your tour? Draw it on the map and get a ready-to-run build kit.
 - **Fresh every month.** Rebuilt automatically from the latest OpenStreetMap data.
 
-The [web app](https://progressive-kiwi.github.io/garminswisstopo-public/routable.html) walks you through everything, from download to first route, with instructions for your exact device and computer.
+The [map app](https://progressive-kiwi.github.io/garminswisstopo-public/app.html#routable) walks you through everything, from download to first route, with instructions for your exact device and computer.
 
 > Heads-up: the fēnix 9 has a brand-new map engine and third-party maps on it are still new territory. Try a small area first, and tell us how it goes!
 
@@ -35,10 +35,10 @@ The map every Swiss hiker grew up with, with extras on top:
 - **Winter ski touring**: LK25 Winter + 4-class slope shading + SAC ski tours coloured by difficulty (blue / red / black).
 - **Summer hiking**: LK25 Summer + slope shading + hiking trails coloured by category (yellow / red / blue).
 
-Tools to get the right pack:
+Get the right pack in the **[map app](https://progressive-kiwi.github.io/garminswisstopo-public/app.html)**: pick your device, then
 
-- **[GPX picker](https://progressive-kiwi.github.io/garminswisstopo-public/gpx_pack_picker.html)**: drop your tour, get the download links.
-- **[Tile picker](https://progressive-kiwi.github.io/garminswisstopo-public/tile_picker.html)**: paint your own area and have a custom pack built.
+- **[click a region](https://progressive-kiwi.github.io/garminswisstopo-public/app.html#region)** (or search a place) and download its pack, or
+- **[paint your own area](https://progressive-kiwi.github.io/garminswisstopo-public/app.html#custom)** and have a custom pack built, sized to your tile cap.
 - **[Install guide](https://progressive-kiwi.github.io/garminswisstopo-public/install.html)**: ten minutes, no special software.
 
 ## ⚠️ Stay safe out there

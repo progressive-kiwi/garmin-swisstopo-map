@@ -20,13 +20,14 @@ You will **not** need any special software. We just copy files.
 
 ## Step 1. Pick which maps you want
 
-Two ways:
+Open the [map app](../tools/app.html) and pick your watch first; it shows
+which map types fit. Then:
 
-**A. "I know roughly where I'm going" → use the [GPX picker tool](../tools/gpx_pack_picker.html).**
-Drop the GPX of your planned tour onto the page; it tells you which map zone(s)
-cover the route and gives you direct download links.
+**A. "I know roughly where I'm going" → [Ready-made region](../tools/app.html#region).**
+Click the region on the map (or search a place name); you get its zip and the
+individual download links.
 
-**B. "I want to paint my own area" → use the [tile picker tool](../tools/tile_picker.html).**
+**B. "I want to paint my own area" → [Custom area](../tools/app.html#custom).**
 Click 10 × 10 km cells on the swisstopo map until you've covered the terrain you
 want. Hit **Build my custom pack**. Wait 5 to 15 minutes; the server builds a KMZ
 for you and gives you a download link.
@@ -199,7 +200,7 @@ The current packs **don't fit** on the Fenix 6 family; those watches have a
 A coarser-resolution Fenix 6 build is planned but not yet available. Until then,
 you can:
 
-- Use the GPX picker for orientation (which zone covers your tour).
+- Paint a [custom area](../tools/app.html#custom) sized to the 100-tile cap.
 - For Fenix 6, fall back to Garmin's commercial TOPO Schweiz v2 PRO (vector,
   doesn't have LK25 cartography but does fit on the watch).
 

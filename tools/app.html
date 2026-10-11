@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Maps for my Garmin</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Pick your Garmin device, then download a ready-made swisstopo region pack, paint a custom area, or get a routable vector map of Switzerland.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin="">
+<style>
+  :root {
+    --bg: #faf8f3;
+    --surface: #ffffff;
+    --ink: #1a1d21;
+    --muted: #5b6470;
+    --line: #e7e3d8;
+    --line-strong: #cfccc1;
+    --soft: #f1efe7;
+    --accent: #d4351c;
+    --accent-dark: #a82a16;
+    --accent-bg: #fff3ef;
+    --info: #3870b6;
+    --info-bg: #e8f0fb;
+    --good: #2f7a3d;
+    --good-bg: #eaf4ec;
+    --warn: #8a5a00;
+    --warn-ink: #6b4a00;
+    --warn-bg: #fbf3df;
+    --warn-line: #ecdfb6;
+    --bad-bg: #fbe8e6;
+    --bad-line: #f1c8c1;
+    --bad-ink: #6b1d10;
+    --code-bg: #2a2d31;
+    --code-ink: #f0ece1;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, system-ui, sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    display: flex; flex-direction: column;
+  }
+  a { color: var(--accent-dark); }
+  .hidden { display: none !important; }
+
+  /* ── Top bar ───────────────────────────────────────────── */
+  .topbar {
+    border-bottom: 1px solid var(--line);
+    background: rgba(250,248,243,0.95);
+    backdrop-filter: saturate(160%) blur(8px);
+    flex: 0 0 auto;
+  }
+  .topbar-inner {
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    padding: 0 1rem; height: 54px;
+  }
+  .brand {
+    display: flex; align-items: center; gap: 0.55rem;
+    font-weight: 600; color: var(--ink); text-decoration: none; font-size: 0.98rem;
+    white-space: nowrap;
+  }
+  .brand-mark { width: 24px; height: 24px; display: block; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.18)); }
+  .topnav { display: flex; align-items: center; gap: 0.9rem; }
+  .topnav a { color: var(--muted); text-decoration: none; font-size: 0.86rem; }
+  .topnav a:hover { color: var(--ink); }
+  .langs { display: flex; gap: 0.25rem; }
+  .langs button {
+    appearance: none; border: 1px solid var(--line); background: transparent;
+    color: var(--muted); font: inherit; font-size: 0.78rem; font-weight: 600;
+    padding: 0.28rem 0.55rem; border-radius: 999px; cursor: pointer; letter-spacing: 0.04em;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+  .langs button:hover { background: var(--soft); color: var(--ink); }
+  .langs button[aria-pressed="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+  @media (max-width: 560px) { .topnav a { display: none; } }
+
+  /* ── Split layout ─────────────────────────────────────── */
+  main { flex: 1; min-height: 0; display: flex; }
+  #panel {
+    width: 400px; max-width: 42vw;
+    padding: 1rem 1.1rem 2rem;
+    overflow-y: auto;
+    border-right: 1px solid var(--line);
+    background: var(--bg);
+  }
+  #map { flex: 1; min-width: 0; background: #ddd; }
+  #map.drawing { cursor: crosshair; }
+  body.painting-add    #map { cursor: cell; }
+  body.painting-remove #map { cursor: not-allowed; }
+  @media (max-width: 760px) {
+    main { flex-direction: column; }
+    #panel { width: 100%; max-width: none; max-height: 58vh; border-right: 0; border-bottom: 1px solid var(--line); padding: 0.9rem 16px 1.5rem; }
+    #map { min-height: 42vh; }
+  }
+
+  /* ── Panel typography ─────────────────────────────────── */
+  .intro h1 { margin: 0 0 0.15rem; font-size: 1.2rem; letter-spacing: -0.01em; }
+  .intro p { margin: 0 0 0.4rem; color: var(--muted); font-size: 0.88rem; }
+  .step { margin-top: 1.25rem; }
+  .step-h {
+    display: flex; align-items: center; gap: 0.5rem;
+    margin: 0 0 0.55rem; font-size: 0.75rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink);
+  }
+  .step-h .num {
+    display: inline-grid; place-items: center; width: 20px; height: 20px;
+    border-radius: 50%; background: var(--ink); color: #fff; font-size: 0.7rem; letter-spacing: 0;
+  }
+  h3.sect {
+    margin: 1.1rem 0 0.45rem; font-size: 0.72rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted);
+  }
+  .note { font-size: 0.8rem; color: var(--muted); margin: 0.35rem 0 0; }
+  small { color: var(--muted); font-size: 0.82rem; }
+  code { background: var(--soft); padding: 0.05em 0.3em; border-radius: 3px; font-size: 0.88em; }
+  pre {
+    background: var(--code-bg); color: var(--code-ink);
+    padding: 0.65rem 0.8rem; border-radius: 6px; margin: 0.4rem 0;
+    overflow-x: auto; font-size: 0.76rem; line-height: 1.45; white-space: pre;
+  }
+  pre code { background: none; padding: 0; color: inherit; }
+  kbd {
+    background: var(--soft); border: 1px solid var(--line); border-radius: 3px;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.05); color: var(--ink);
+    padding: 1px 5px; font-family: ui-monospace, SFMono-Regular, monospace; font-size: 0.78em;
+  }
+  details { margin: 0.5rem 0; }
+  summary { cursor: pointer; font-weight: 500; font-size: 0.88rem; }
+  details.box { border: 1px solid var(--line); border-radius: 8px; background: var(--surface); padding: 0.45rem 0.75rem; }
+  details.box[open] summary { margin-bottom: 0.35rem; }
+  details.box p, details.box li { font-size: 0.85rem; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.8rem; margin: 0.4rem 0; }
+  th, td { border-bottom: 1px solid var(--line); padding: 0.3rem 0.35rem; text-align: left; vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; }
+
+  /* ── Form controls ────────────────────────────────────── */
+  select, input[type="text"], input[type="email"], input[type="number"] {
+    font: inherit; font-size: 0.9rem; width: 100%;
+    border: 1px solid var(--line); border-radius: 8px; padding: 0.5rem 0.65rem;
+    background: var(--surface); color: var(--ink);
+    transition: border-color 0.15s;
+  }
+  select:focus, input:focus { outline: none; border-color: var(--accent); }
+  input:disabled { color: var(--muted); background: var(--soft); }
+  label.f { display: flex; flex-direction: column; gap: 0.2rem; font-size: 0.8rem; color: var(--muted); margin: 0.4rem 0; }
+  label.chk { display: flex; align-items: center; gap: 0.45rem; font-size: 0.88rem; padding: 0.2rem 0; }
+  label.chk select { width: auto; padding: 0.2rem 0.4rem; font-size: 0.84rem; }
+  .range { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: var(--muted); margin: 0.4rem 0; }
+  .range input { flex: 1; }
+
+  .btn {
+    appearance: none; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+    font: inherit; font-size: 0.88rem; font-weight: 600; text-decoration: none;
+    padding: 0.5rem 0.95rem; border-radius: 8px; cursor: pointer;
+    border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+    transition: background 0.15s, border-color 0.15s, transform 0.05s;
+  }
+  .btn:hover { border-color: var(--line-strong); }
+  .btn:active { transform: translateY(1px); }
+  .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn-primary:hover { background: var(--accent-dark); border-color: var(--accent-dark); }
+  .btn-block { display: flex; width: 100%; padding: 0.65rem 0.9rem; font-size: 0.95rem; }
+  .btn:disabled, .btn[aria-disabled="true"] { background: var(--line-strong); border-color: var(--line-strong); color: #888; cursor: not-allowed; }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.5rem 0; }
+
+  /* ── Choice cards (device-agnostic radio cards) ───────── */
+  .cards { display: grid; gap: 0.45rem; }
+  .cards.two { grid-template-columns: 1fr 1fr; }
+  .cards.three { grid-template-columns: repeat(3, 1fr); }
+  .card {
+    display: block; position: relative; cursor: pointer;
+    border: 1.5px solid var(--line); border-radius: 9px; background: var(--surface);
+    padding: 0.55rem 0.7rem; transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+  }
+  .card input { position: absolute; opacity: 0; pointer-events: none; width: 1px; height: 1px; left: 0; top: 0; }
+  .card:hover { border-color: var(--line-strong); }
+  .card strong { display: block; font-size: 0.92rem; }
+  .card span.sub { display: block; color: var(--muted); font-size: 0.76rem; margin-top: 0.1rem; line-height: 1.35; }
+  .card:has(input:checked), .card.checked { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+  .card:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .card.disabled { opacity: 0.5; cursor: not-allowed; background: var(--soft); }
+  .card .badge {
+    position: absolute; top: -8px; right: 8px;
+    background: var(--good); color: #fff; font-size: 0.62rem; font-weight: 700;
+    letter-spacing: 0.05em; text-transform: uppercase; padding: 0.05rem 0.45rem; border-radius: 999px;
+  }
+  .modecard { display: flex; gap: 0.6rem; align-items: flex-start; }
+  .modecard .ico { font-size: 1.15rem; line-height: 1.2; flex: 0 0 auto; }
+
+  /* ── Callouts / boxes ─────────────────────────────────── */
+  .callout { border-radius: 8px; padding: 0.55rem 0.75rem; margin: 0.6rem 0; font-size: 0.83rem; border: 1px solid; }
+  .callout.info { background: var(--info-bg); border-color: #c9daf1; color: #1d3c66; }
+  .callout.warn { background: var(--warn-bg); border-color: var(--warn-line); color: var(--warn-ink); }
+  .callout.bad  { background: var(--bad-bg); border-color: var(--bad-line); color: var(--bad-ink); }
+  .callout.good { background: var(--good-bg); border-color: #cfe4d3; color: #1d4a25; }
+  .callout a { color: inherit; }
+  .callout p { margin: 0.3rem 0 0; }
+  .caps { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.45rem; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    background: var(--soft); border: 1px solid var(--line); border-radius: 999px;
+    padding: 0.08rem 0.55rem; font-size: 0.75rem; color: var(--ink);
+  }
+  .chip.yes { background: var(--good-bg); border-color: #cfe4d3; color: #1d4a25; }
+  .chip.no  { color: var(--muted); }
+  .chip .swatch { width: 10px; height: 10px; border-radius: 50%; }
+  .chip .x { cursor: pointer; color: var(--muted); font-weight: 700; padding: 0 0.1rem; }
+  .chip .x:hover { color: var(--accent-dark); }
+
+  .empty-state { color: var(--muted); padding: 1rem 0; text-align: center; font-size: 0.9rem; }
+
+  /* Result box (ready-to-download) */
+  .result {
+    background: var(--surface); border: 2px solid var(--good); border-radius: 12px;
+    padding: 0.85rem 1rem; margin-top: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04), 0 8px 24px rgba(47,122,61,0.10);
+  }
+  .result.alt { border-color: var(--info); box-shadow: 0 2px 4px rgba(0,0,0,0.04), 0 8px 24px rgba(56,112,182,0.10); }
+  .result .label {
+    display: inline-block; background: var(--good); color: #fff;
+    padding: 0.1rem 0.55rem; border-radius: 999px; margin-bottom: 0.35rem;
+    font-size: 0.66rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+  }
+  .result.alt .label { background: var(--info); }
+  .result h3 { margin: 0 0 0.25rem; font-size: 1.05rem; letter-spacing: -0.01em; }
+  .result p { margin: 0.2rem 0 0.6rem; font-size: 0.88rem; color: var(--muted); }
+  .result .tip { font-size: 0.78rem; color: var(--muted); margin: 0.45rem 0 0; }
+
+  .pack { padding: 0.5rem 0.7rem; border: 1px solid var(--line); border-radius: 7px; margin: 0.4rem 0; background: var(--surface); }
+  .pack.primary { border-color: var(--good); background: #f4faf5; }
+  .pack-name { font-weight: 600; font-size: 0.9rem; }
+  .pack-stats, .pack-desc { color: var(--muted); font-size: 0.78rem; margin-top: 0.1rem; }
+
+  .dl-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.42rem 0.6rem; font-size: 0.84rem; margin: 0.25rem 0;
+    border: 1px solid var(--line); border-radius: 6px; background: var(--bg);
+    text-decoration: none; color: var(--ink); transition: border-color 0.15s, background 0.15s;
+  }
+  .dl-row:hover { border-color: var(--good); background: var(--good-bg); }
+  .dl-name { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; margin-right: 0.6rem; }
+  .dl-meta { color: var(--muted); font-size: 0.78rem; }
+  .dl-arrow { color: var(--good); font-weight: 700; margin-left: 0.4rem; }
+
+  .stat-box { padding: 0.6rem 0.75rem; border-radius: 8px; margin: 0.5rem 0; border: 1px solid var(--line); background: var(--surface); }
+  .stat-box.ok   { background: var(--good-bg); border-color: #cfe4d3; color: #1d4a25; }
+  .stat-box.warn { background: var(--bad-bg); border-color: var(--bad-line); color: var(--bad-ink); }
+  .stat-line { font-size: 0.92rem; line-height: 1.4; }
+  .stat-line strong { font-size: 1.02rem; }
+  .meter { height: 6px; border-radius: 3px; background: var(--soft); overflow: hidden; margin-top: 0.4rem; }
+  .meter > div { height: 100%; background: var(--good); transition: width 0.2s; }
+  .stat-box.warn .meter > div { background: var(--accent); }
+
+  .kv { display: grid; grid-template-columns: max-content 1fr; gap: 0.15rem 0.9rem; font-size: 0.84rem; margin: 0.5rem 0; }
+  .kv dt { color: var(--muted); }
+  .kv dd { margin: 0; font-variant-numeric: tabular-nums; word-break: break-all; }
+
+  ol.steps { padding-left: 1.2rem; margin: 0.3rem 0; font-size: 0.86rem; }
+  ol.steps > li { margin: 0.45rem 0; }
+  ol.steps ul { padding-left: 1rem; margin: 0.25rem 0; }
+
+  /* Controls help (custom area) */
+  .controls-help { background: var(--surface); border: 1px solid var(--line); padding: 0.5rem 0.65rem; border-radius: 8px; margin: 0.4rem 0 0.6rem; }
+  .ctrl-row { display: flex; align-items: center; gap: 0.55rem; padding: 0.2rem 0.4rem; border-radius: 5px; font-size: 0.84rem; transition: background 0.15s; }
+  .ctrl-row kbd { min-width: 40px; text-align: center; flex-shrink: 0; }
+  .ctrl-row .arrow { opacity: 0.55; }
+  .ctrl-row.add { color: var(--good); }
+  .ctrl-row.remove { color: var(--accent-dark); }
+  body.painting-add    .ctrl-row.add    { background: var(--good-bg); }
+  body.painting-add    .ctrl-row.add kbd { background: var(--good); border-color: #1e8449; color: #fff; }
+  body.painting-remove .ctrl-row.remove { background: var(--bad-bg); }
+  body.painting-remove .ctrl-row.remove kbd { background: var(--accent); border-color: var(--accent-dark); color: #fff; }
+
+  /* Place search */
+  .search { position: relative; }
+  .suggest {
+    position: absolute; left: 0; right: 0; top: calc(100% + 4px); z-index: 1000;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 8px;
+    max-height: 240px; overflow-y: auto;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.08);
+  }
+  .suggest div { padding: 0.48rem 0.7rem; cursor: pointer; font-size: 0.87rem; border-bottom: 1px solid #f5f1e3; }
+  .suggest div:last-child { border-bottom: none; }
+  .suggest div:hover, .suggest div.active { background: #f4efe2; }
+
+  /* Map legend */
+  .legend {
+    background: rgba(255,255,255,0.97); padding: 0.4rem 0.6rem; border-radius: 6px;
+    font-size: 0.75rem; line-height: 1.4; border: 1px solid var(--line);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.06), 0 6px 18px rgba(0,0,0,0.12);
+  }
+  .legend:empty { display: none; }
+  .legend .row { display: flex; align-items: center; gap: 0.4rem; padding: 0.1rem 0; }
+  .legend .sw { display: inline-block; width: 14px; height: 14px; border-radius: 2px; border: 1px solid rgba(0,0,0,0.2); }
+
+  footer {
+    flex: 0 0 auto; border-top: 1px solid var(--line); background: var(--surface);
+    padding: 0.5rem 1rem; font-size: 0.72rem; color: #888; text-align: center;
+  }
+  footer a { color: #888; }
+  @media (max-width: 760px) { footer { padding: 0.35rem 16px; } footer .legal { display: none; } }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <svg class="brand-mark" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <polygon points="12,4.4 20.6,19.7 3.4,19.7" fill="#d4351c" stroke="#d4351c" stroke-width="3.6" stroke-linejoin="round"/>
+        <rect x="8" y="13" width="8" height="2.5" fill="#fff" rx="0.4"/>
+        <rect x="10.75" y="10.25" width="2.5" height="8" fill="#fff" rx="0.4"/>
+      </svg>
+      <span data-i18n="brand">swisstopo for Garmin</span>
+    </a>
+    <div class="topnav">
+      <a href="install.html" data-i18n="nav.install">Install guide</a>
+      <nav class="langs" aria-label="Language">
+        <button type="button" data-lang="en" aria-pressed="false">EN</button>
+        <button type="button" data-lang="de" aria-pressed="false">DE</button>
+        <button type="button" data-lang="fr" aria-pressed="false">FR</button>
+        <button type="button" data-lang="it" aria-pressed="false">IT</button>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div id="panel">
+    <div class="intro">
+      <h1 data-i18n="page.title">Maps for my Garmin</h1>
+      <p data-i18n="page.subtitle">Pick your device. We show which maps it can run and get you the files.</p>
+    </div>
+
+    <!-- ── 1 · Device ─────────────────────────────────── -->
+    <section class="step" id="stepDevice">
+      <h2 class="step-h"><span class="num">1</span><span data-i18n="dev.heading">Your device</span></h2>
+      <select id="deviceSel" aria-label="Device">
+        <option value="" data-i18n="dev.loading">Loading device list…</option>
+      </select>
+      <div id="deviceInfo"></div>
+    </section>
+
+    <!-- ── 2 · Map type ───────────────────────────────── -->
+    <section class="step" id="stepMode">
+      <h2 class="step-h"><span class="num">2</span><span data-i18n="mode.heading">Map type</span></h2>
+      <div class="cards" id="modeCards">
+        <label class="card modecard" data-mode="region">
+          <input type="radio" name="mode" value="region">
+          <span class="ico" aria-hidden="true">▦</span>
+          <span><strong data-i18n="mode.region">Ready-made region</strong>
+            <span class="sub" data-i18n="mode.region_sub">swisstopo LK25 raster, 31 regions. Click one, download a zip.</span>
+            <span class="sub why"></span></span>
+        </label>
+        <label class="card modecard" data-mode="custom">
+          <input type="radio" name="mode" value="custom">
+          <span class="ico" aria-hidden="true">✎</span>
+          <span><strong data-i18n="mode.custom">Custom area</strong>
+            <span class="sub" data-i18n="mode.custom_sub">swisstopo LK25 raster. Paint 10 km cells, sized to your tile cap. Built and emailed.</span>
+            <span class="sub why"></span></span>
+        </label>
+        <label class="card modecard" data-mode="routable">
+          <input type="radio" name="mode" value="routable">
+          <span class="ico" aria-hidden="true">➜</span>
+          <span><strong data-i18n="mode.routable">Routable vector map</strong>
+            <span class="sub" data-i18n="mode.routable_sub">OpenStreetMap .img with turn-by-turn routing and address search.</span>
+            <span class="sub why"></span></span>
+        </label>
+      </div>
+      <details class="box" style="margin-top:0.6rem">
+        <summary data-i18n="mode.compare">Raster vs routable: what's the difference?</summary>
+        <table>
+          <thead><tr><th></th><th data-i18n="cmp.raster">Raster (region / custom)</th><th data-i18n="cmp.vector">Routable vector</th></tr></thead>
+          <tbody>
+            <tr><td data-i18n="cmp.format">Format</td><td data-i18n="cmp.format_r">JPEG tiles in .kmz</td><td data-i18n="cmp.format_v">Vector .img</td></tr>
+            <tr><td data-i18n="cmp.look">Looks like</td><td data-i18n="cmp.look_r">swisstopo LK25 + slope + routes</td><td data-i18n="cmp.look_v">OpenStreetMap style</td></tr>
+            <tr><td data-i18n="cmp.routing">Routing</td><td data-i18n="cmp.no">No</td><td data-i18n="cmp.routing_v">Turn-by-turn, rerouting</td></tr>
+            <tr><td data-i18n="cmp.search">Address search</td><td data-i18n="cmp.no">No</td><td data-i18n="cmp.yes">Yes</td></tr>
+            <tr><td data-i18n="cmp.limit">Size limit</td><td data-i18n="cmp.limit_r">Tile cap (100–500)</td><td data-i18n="cmp.limit_v">None in practice</td></tr>
+            <tr><td data-i18n="cmp.devices">Devices</td><td data-i18n="cmp.devices_r">Most Garmin watches, Edge, handhelds</td><td data-i18n="cmp.devices_v">fēnix 9 Pro, Edge 1050</td></tr>
+          </tbody>
+        </table>
+      </details>
+    </section>
+
+    <!-- ── 3 · Area + download (per mode) ─────────────── -->
+    <section class="step" id="stepArea">
+      <h2 class="step-h"><span class="num">3</span><span id="areaHeading" data-i18n="area.heading">Area</span></h2>
+
+      <!-- Map style: region + custom (raster) -->
+      <div id="styleBox" data-modes="region custom">
+        <div class="cards two" id="seasonCards">
+          <label class="card"><input type="radio" name="season" value="winter" checked>
+            <strong>❄ <span data-i18n="season.winter_lbl">Winter</span></strong>
+            <span class="sub" data-i18n="season.winter_desc">LK25 winter + slope + SAC ski tours</span></label>
+          <label class="card"><input type="radio" name="season" value="summer">
+            <strong>☀ <span data-i18n="season.summer_lbl">Summer</span></strong>
+            <span class="sub" data-i18n="season.summer_desc">LK25 summer + slope + hiking trails</span></label>
+        </div>
+        <div data-modes="custom" style="margin-top:0.35rem">
+          <label class="chk"><input type="checkbox" id="optSlope" checked> <span data-i18n="layers.slope">Slope shading (30°/35°/40°/45°)</span></label>
+          <label class="chk"><input type="checkbox" id="optRoutes" checked> <span data-i18n="layers.routes">Routes:</span>
+            <select id="optRoutesType">
+              <option value="ski" data-i18n="layers.routes_ski">SAC ski tours (winter)</option>
+              <option value="wanderwege" data-i18n="layers.routes_ww">Hiking trails (summer)</option>
+            </select></label>
+        </div>
+        <p class="note" data-i18n="season.preview_note">The map shows the same layers baked into the KMZ files. What you see is what your watch renders.</p>
+        <div class="callout warn" data-i18n="slope.tip">⚠ The 4-class slope shading comes from the swissALTI3D 10 m elevation model. Indicative only. It does not replace the SLF avalanche bulletin or on-site judgement.</div>
+      </div>
+
+      <!-- Routable area choice -->
+      <div id="rtAreaBox" data-modes="routable">
+        <div class="cards three" id="rtAreaCards">
+          <label class="card"><input type="radio" name="rtArea" value="ch" checked><strong data-i18n="rt.area_ch">Switzerland</strong><span class="sub" data-i18n="rt.area_ch_sub">Prebuilt, direct download</span></label>
+          <label class="card"><input type="radio" name="rtArea" value="zone"><strong data-i18n="rt.area_zone">Region</strong><span class="sub" data-i18n="rt.area_zone_sub">Click one on the map</span></label>
+          <label class="card"><input type="radio" name="rtArea" value="draw"><strong data-i18n="rt.area_draw">Rectangle</strong><span class="sub" data-i18n="rt.area_draw_sub">Click two corners</span></label>
+        </div>
+        <div id="rtZoneRow" class="hidden"><label class="f"><span data-i18n="rt.zone_lbl">Region</span><select id="rtZoneSel"></select></label></div>
+        <div id="rtDrawRow" class="hidden btn-row"><button class="btn" type="button" id="rtDrawBtn" data-i18n="rt.draw_start">Start drawing</button></div>
+      </div>
+
+      <!-- Shared place search -->
+      <div class="search" id="placeBox" style="margin-top:0.7rem">
+        <input type="text" id="placeInput" autocomplete="off"
+               data-i18n-placeholder="place.placeholder" placeholder="Search a place: Zermatt, Verbier, Davos…">
+        <div class="suggest hidden" id="placeSuggest" role="listbox"></div>
+      </div>
+      <p class="note" id="placeHint"></p>
+
+      <!-- ── Region mode ── -->
+      <div data-modes="region">
+        <div id="regionResult"><div class="empty-state" data-i18n="region.empty">Click a region on the map or search a place.</div></div>
+        <div id="regionAll"></div>
+      </div>
+
+      <!-- ── Custom mode ── -->
+      <div data-modes="custom">
+        <div class="range"><span data-i18n="town.radius">Radius around places:</span>
+          <input type="range" id="townRadius" min="2" max="40" step="1" value="15">
+          <span><strong id="townRadiusLbl">15</strong> km</span></div>
+        <div id="townChips"></div>
+
+        <div class="controls-help">
+          <div class="ctrl-row"><kbd data-i18n="ctrl.click_kbd">Click</kbd><span class="arrow">→</span><span data-i18n="ctrl.click">toggle one cell</span></div>
+          <div class="ctrl-row add"><kbd>Ctrl</kbd><span class="arrow" data-i18n="ctrl.plus_hover">+ hover</span><span data-i18n="ctrl.ctrl_hover">paint cells as selected</span></div>
+          <div class="ctrl-row remove"><kbd>Shift</kbd><span class="arrow" data-i18n="ctrl.plus_hover">+ hover</span><span data-i18n="ctrl.shift_hover">un-select cells</span></div>
+        </div>
+
+        <div id="cellStatus" class="stat-box">
+          <div class="stat-line"><strong id="cellCount">0</strong> <span data-i18n="status.cells_selected">cells selected</span></div>
+          <div class="stat-line">~<strong id="tileEst">0</strong> <span data-i18n="status.tiles_of">tiles /</span> <strong id="tileCapLbl">500</strong> <span data-i18n="status.cap">cap</span></div>
+          <div class="meter"><div id="tileMeter" style="width:0"></div></div>
+          <div class="note"><span data-i18n="status.tier_breakdown">peak load shown, the watch loads one layer at a time</span>
+            · <span data-i18n="status.detail_short">detail</span> ~<span id="tileEstDetail">0</span>
+            · <span data-i18n="status.overview_short">overview</span> ~<span id="tileEstOv">0</span></div>
+        </div>
+
+        <h3 class="sect" data-i18n="build.heading">Build and email</h3>
+        <input type="email" id="buildEmail" autocomplete="email"
+               data-i18n-placeholder="build.email_placeholder" placeholder="your@email.com (we send the download link)">
+        <div class="btn-row">
+          <button class="btn btn-primary" id="buildBtn" disabled data-i18n="build.go">Build my custom pack</button>
+          <button class="btn" id="clearBtn" data-i18n="build.clear">Clear all</button>
+        </div>
+        <div id="jobProgress"></div>
+        <p class="note" data-i18n="scattered.tip">Scattered cells are fine. The build only emits tiles inside the cells you picked.</p>
+        <details class="box">
+          <summary data-i18n="build.dev_summary">Developer build (PowerShell on your own machine)</summary>
+          <button class="btn" id="exportBtn" disabled data-i18n="build.dev_export">Export selection.json</button>
+          <div id="exportOut"></div>
+        </details>
+        <details class="box">
+          <summary data-i18n="how.summary">How this works</summary>
+          <p data-i18n="how.p1">Each cell is 10 × 10 km in LV95. At LK25-native 2.5 m/px one cell costs roughly 10 tiles on the watch. A 500-tile cap is about 50 cells.</p>
+          <p data-i18n="how.p3">Plain drag still pans the map. While Ctrl or Shift is held, the cursor changes and the controls box highlights the active mode.</p>
+        </details>
+      </div>
+
+      <!-- ── Routable mode ── -->
+      <div data-modes="routable">
+        <dl class="kv" id="rtStats"></dl>
+
+        <div id="rtPkgCh">
+          <a class="btn btn-primary btn-block" id="rtDlImg" href="#">⬇ <span id="rtDlImgLbl">Download CH_routable.img</span></a>
+          <div class="btn-row"><a class="btn" id="rtDlZip" href="#">.zip</a><span class="note" id="rtRelInfo" style="align-self:center;margin:0"></span></div>
+          <p class="note" data-i18n="rt.ch_note">Rebuilt monthly from the current OpenStreetMap extract. Map name “CH routable”, family ID 6421.</p>
+        </div>
+
+        <div id="rtPkgCustom" class="hidden">
+          <p class="note" data-i18n="rt.custom_note">Custom areas are compiled on your machine or on GitHub Actions (mkgmap is Java and does not run in a browser). The kit contains script, options and your area.</p>
+          <label class="f"><span data-i18n="rt.opt_name">Map name on device</span><input type="text" id="rtOptName" maxlength="40"></label>
+          <label class="f"><span data-i18n="rt.opt_file">File name</span><input type="text" id="rtOptFile" maxlength="60"></label>
+          <label class="f"><span data-i18n="rt.opt_fid">Family ID (1–65535)</span><input type="number" id="rtOptFid" value="6421" min="1" max="65535"></label>
+          <div class="btn-row">
+            <button class="btn btn-primary" type="button" id="rtKitBtn" data-i18n="rt.kit">Download build kit (.zip)</button>
+            <button class="btn" type="button" id="rtCopyBtn" data-i18n="rt.copy">Copy build command</button>
+          </div>
+          <details class="box" open><summary data-i18n="rt.docker">Docker (Windows, macOS, Linux)</summary>
+            <p data-i18n="rt.docker_p">Unzip the kit, open a terminal in the folder, run:</p><pre id="rtCmdDocker"></pre></details>
+          <details class="box"><summary data-i18n="rt.native">Native (Linux / macOS)</summary>
+            <p data-i18n="rt.native_p">Needs Java 11+, curl and osmium-tool.</p><pre id="rtCmdNative"></pre></details>
+          <details class="box"><summary data-i18n="rt.gha">GitHub Actions (no local install)</summary>
+            <p data-i18n="rt.gha_p">Fork the repository, open Actions → Build routable IMG → Run workflow, paste these inputs. Download the .img from the run's artifacts (~10 min).</p><pre id="rtCmdGha"></pre></details>
+          <p class="note" data-i18n="rt.build_time">Build time on 4 cores: ~1 min for a city, ~6 min for all of Switzerland. The first run downloads the Swiss OSM extract (~650 MB).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 4 · Install ─────────────────────────────────── -->
+    <section class="step" id="stepInstall">
+      <h2 class="step-h"><span class="num">4</span><span data-i18n="install.heading">Install</span></h2>
+      <div id="installBox"></div>
+    </section>
+  </div>
+  <div id="map" role="application" aria-label="Map"></div>
+</main>
+
+<footer>
+  <span id="footerData" data-i18n="footer.data">Map data © swisstopo.</span>
+  <span class="legal" data-i18n="footer.legal">An independent community project. Not affiliated with Garmin Ltd. or swisstopo. "Garmin", "Epix" and "Fenix" are trademarks of Garmin Ltd.</span>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.10.0/proj4.js"></script>
+<script src="app/i18n.js"></script>
+<script src="app/core.js"></script>
+<script src="app/mode_region.js"></script>
+<script src="app/mode_custom.js"></script>
+<script src="app/mode_routable.js"></script>
+<script src="app/main.js"></script>
+</body>
+</html>

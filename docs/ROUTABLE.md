@@ -1,6 +1,6 @@
 # Routable vector map — fenix 9 Pro / Edge 1050
 
-Web app: [`tools/routable.html`](../tools/routable.html) (GitHub Pages: `routable.html`).
+Web app: [`tools/app.html#routable`](../tools/app.html) (GitHub Pages: `app.html#routable`), the "Routable vector map" mode of the shared map app.
 
 ## Review against fenix 9 Pro (Oct 2026)
 
@@ -9,7 +9,7 @@ Web app: [`tools/routable.html`](../tools/routable.html) (GitHub Pages: `routabl
 | Repo ships raster KMZ Custom Maps only | Not routable, no search; raster decode slows pan/zoom | Added routable `.img` pipeline |
 | 500-tile / 3 MB-per-KMZ cap drives the whole zone design | Irrelevant for vector `.img` (fenix 9 Pro and Edge 1050: 64 GB) | One whole-country file (310 MB) |
 | fenix 9 series: new mapping engine (perspective view, 30–40 % faster pan, +50 % RAM) | Third-party `.img` and KMZ behaviour not yet publicly confirmed | Marked unverified; test-area flow in web app |
-| `install.html` / `INSTALL.md` assume a USB drive named GARMIN | fenix 7+/8/9 and Edge 1050 use MTP; macOS Finder shows nothing | MTP steps per OS in `routable.html` |
+| `install.html` / `INSTALL.md` assume a USB drive named GARMIN | fenix 7+/8/9 and Edge 1050 use MTP; macOS Finder shows nothing | MTP steps per OS in `app.html` (routable mode) |
 | `watches.json` lacks fenix 9 | Device not selectable in tile picker | Added fenix 9 Pro 43/47/51 (cap assumed = fenix 8, flagged disputed) |
 | `build_manifest.py` default slug `JoepVdE/...` | Download links point to upstream, not this fork | Unchanged (manifest built in private repo) |
 
