@@ -107,28 +107,8 @@
     #map { min-height: 45vh; }
   }
 
-  /* Drop zone */
-  #dropzone {
-    border: 2px dashed #b9b29c;
-    padding: 1.5rem 1rem; text-align: center;
-    cursor: pointer; border-radius: 10px;
-    background: var(--surface);
-    transition: border-color 0.15s, background 0.15s, transform 0.05s;
-  }
-  #dropzone:hover { border-color: var(--accent); background: #fff; }
-  #dropzone.over { border-color: var(--good); background: var(--good-bg); transform: scale(1.01); }
-  #dropzone .dz-title { font-weight: 600; font-size: 1rem; color: var(--ink); }
-  #dropzone .dz-sub { color: var(--muted); font-size: 0.85rem; margin-top: 0.25rem; }
-
-  /* OR divider */
-  .or-divider {
-    display: flex; align-items: center; gap: 0.6rem;
-    color: var(--muted); font-size: 0.72rem; font-weight: 600;
-    letter-spacing: 0.08em; text-transform: uppercase;
-    margin: 0.9rem 0 0.6rem;
-  }
-  .or-divider::before, .or-divider::after {
-    content: ""; flex: 1; height: 1px; background: var(--line);
+  .pick-hint {
+    margin: 0 0 0.6rem; color: var(--muted); font-size: 0.85rem;
   }
 
   /* Town search */
@@ -354,19 +334,13 @@
 <div class="page-title">
   <div class="page-title-inner">
     <h1 data-i18n="page.title">Find maps for my tour</h1>
-    <p data-i18n="page.subtitle">Drop your GPX. We tell you which regional pack to download.</p>
+    <p data-i18n="page.subtitle">Click a region on the map, or search a place. We tell you which pack to download.</p>
   </div>
 </div>
 
 <main>
   <div id="leftPanel">
-    <div id="dropzone">
-      <div class="dz-title" data-i18n="dz.title">Drop GPX file here</div>
-      <div class="dz-sub" data-i18n="dz.sub">or click to browse</div>
-    </div>
-    <input type="file" id="fileInput" accept=".gpx" style="display:none">
-
-    <div class="or-divider"><span data-i18n="or.label">OR</span></div>
+    <p class="pick-hint" data-i18n="pick.hint">Hover a rectangle to see its name, click it to get the download links.</p>
 
     <div class="town-search">
       <input type="text" id="townInput"
@@ -394,7 +368,8 @@
     </div>
 
     <h3 class="sect" data-i18n="result.heading">Recommendation</h3>
-    <div id="result"><div class="empty-state" data-i18n="result.empty">No file loaded yet.</div></div>
+    <div id="result"><div class="empty-state" data-i18n="result.empty">Click a region on the map or search a place.</div></div>
+    <div id="allCh"></div>
   </div>
   <div id="map"></div>
 </main>
@@ -414,10 +389,7 @@
     en: {
       "brand": "swisstopo for Garmin",
       "page.title": "Find maps for my tour",
-      "page.subtitle": "Drop your GPX. We tell you which regional pack to download.",
-      "dz.title": "Drop GPX file here",
-      "dz.sub": "or click to browse",
-      "or.label": "OR",
+      "page.subtitle": "Click a region on the map, or search a place. We tell you which pack to download.",
       "town.placeholder": "Search a place: Zermatt, Verbier, Davos…",
       "season.heading": "Season (preview on the map)",
       "season.winter_lbl": "Winter",
@@ -427,11 +399,17 @@
       "season.preview_note": "The map below shows the same layers baked into the KMZ files. What you see here is what your watch will render.",
       "slope.tip": "⚠ The 4-class slope shading comes from the swissALTI3D 10 m elevation model. Indicative only. It does not replace the SLF avalanche bulletin or on-site judgement. See the full disclaimer in the install guide.",
       "result.heading": "Recommendation",
-      "result.empty": "No file loaded yet.",
+      "result.empty": "Click a region on the map or search a place.",
+      "pick.hint": "Hover a rectangle to see its name, click it to get the download links.",
+      "all.label": "Everything at once",
+      "all.title": "Download all of Switzerland",
+      "all.body": "The whole {season} set is only {mb} MB in {n} files, small enough to just grab everything.",
+      "all.btn": "Download all {n} files ({mb} MB)",
+      "all.season_winter": "winter",
+      "all.season_summer": "summer",
       "result.no_match.label": "Build a custom pack",
       "result.no_match.title": "No ready-made pack matches this route",
       "result.no_match": "It may fall outside Switzerland, cross into a region we don't ship yet, or be a Mittelland route in winter (those zones ship as summer-only packs). The custom map maker builds a pack for any area in Switzerland.",
-      "result.gpx_empty": "GPX has no trkpt / rtept / wpt points.",
       "result.step1": "Step 1",
       "result.dl_title": "Download these files",
       "result.dl_all": "Download all {n} files",
@@ -482,10 +460,7 @@
     de: {
       "brand": "swisstopo für Garmin",
       "page.title": "Karten für meine Tour finden",
-      "page.subtitle": "Zieh deine GPX rein. Wir sagen dir, welches Regionalpaket du brauchst.",
-      "dz.title": "GPX-Datei hier ablegen",
-      "dz.sub": "oder klicken zum Auswählen",
-      "or.label": "ODER",
+      "page.subtitle": "Klick eine Region auf der Karte an oder such einen Ort. Wir sagen dir, welches Paket du brauchst.",
       "town.placeholder": "Ort suchen: Zermatt, Verbier, Davos…",
       "season.heading": "Saison (Vorschau auf der Karte)",
       "season.winter_lbl": "Winter",
@@ -495,11 +470,17 @@
       "season.preview_note": "Die Karte unten zeigt die gleichen Ebenen, die in den KMZ-Dateien stecken. Was du hier siehst, rendert deine Uhr.",
       "slope.tip": "⚠ Die 4-stufige Hangneigung stammt aus dem swissALTI3D-Höhenmodell (10 m). Nur indikativ. Sie ersetzt nicht das SLF-Lawinenbulletin oder das Urteil vor Ort. Vollständiger Haftungsausschluss in der Installationsanleitung.",
       "result.heading": "Empfehlung",
-      "result.empty": "Noch keine Datei geladen.",
+      "result.empty": "Klick eine Region auf der Karte an oder such einen Ort.",
+      "pick.hint": "Fahr über ein Rechteck für den Namen, klick es an für die Download-Links.",
+      "all.label": "Alles auf einmal",
+      "all.title": "Ganze Schweiz herunterladen",
+      "all.body": "Das ganze {season}-Set hat nur {mb} MB in {n} Dateien, klein genug, um einfach alles zu nehmen.",
+      "all.btn": "Alle {n} Dateien laden ({mb} MB)",
+      "all.season_winter": "Winter",
+      "all.season_summer": "Sommer",
       "result.no_match.label": "Eigenes Paket bauen",
       "result.no_match.title": "Kein vorgefertigtes Paket passt zu dieser Route",
       "result.no_match": "Vielleicht liegt sie ausserhalb der Schweiz, in einer Region die wir noch nicht ausliefern, oder ist eine Mittelland-Route im Winter (diese Regionen gibt's nur als Sommer-Paket). Der Custom Map Maker baut ein Paket für jede Fläche in der Schweiz.",
-      "result.gpx_empty": "Die GPX enthält keine trkpt / rtept / wpt Punkte.",
       "result.step1": "Schritt 1",
       "result.dl_title": "Diese Dateien herunterladen",
       "result.dl_all": "Alle {n} Dateien herunterladen",
@@ -550,10 +531,7 @@
     fr: {
       "brand": "swisstopo pour Garmin",
       "page.title": "Trouver les cartes de ma sortie",
-      "page.subtitle": "Dépose ton GPX. On te dit quel pack régional télécharger.",
-      "dz.title": "Dépose ton fichier GPX ici",
-      "dz.sub": "ou clique pour parcourir",
-      "or.label": "OU",
+      "page.subtitle": "Clique une région sur la carte ou cherche un lieu. On te dit quel pack télécharger.",
       "town.placeholder": "Cherche un lieu : Zermatt, Verbier, Davos…",
       "season.heading": "Saison (aperçu sur la carte)",
       "season.winter_lbl": "Hiver",
@@ -563,11 +541,17 @@
       "season.preview_note": "La carte ci-dessous montre les mêmes couches que dans les fichiers KMZ. Ce que tu vois ici, ta montre l'affichera aussi.",
       "slope.tip": "⚠ L'ombrage des pentes en 4 classes provient du modèle altimétrique swissALTI3D 10 m. À titre indicatif. Ne remplace ni le bulletin d'avalanches SLF ni le jugement sur le terrain. Voir la clause complète dans le guide d'installation.",
       "result.heading": "Recommandation",
-      "result.empty": "Aucun fichier chargé.",
+      "result.empty": "Clique une région sur la carte ou cherche un lieu.",
+      "pick.hint": "Survole un rectangle pour voir son nom, clique-le pour obtenir les liens.",
+      "all.label": "Tout d'un coup",
+      "all.title": "Télécharger toute la Suisse",
+      "all.body": "Le set {season} complet ne fait que {mb} MB en {n} fichiers, assez petit pour tout prendre.",
+      "all.btn": "Tout télécharger ({n} fichiers, {mb} MB)",
+      "all.season_winter": "hiver",
+      "all.season_summer": "été",
       "result.no_match.label": "Construire un pack sur mesure",
       "result.no_match.title": "Aucun pack tout prêt ne correspond à ce parcours",
       "result.no_match": "Il est peut-être hors de Suisse, dans une région que nous ne livrons pas encore, ou un parcours du Mittelland en hiver (ces régions ne sont livrées qu'en pack été). Le custom map maker construit un pack pour n'importe quelle zone en Suisse.",
-      "result.gpx_empty": "Le GPX ne contient aucun point trkpt / rtept / wpt.",
       "result.step1": "Étape 1",
       "result.dl_title": "Télécharge ces fichiers",
       "result.dl_all": "Tout télécharger ({n} fichiers)",
@@ -618,10 +602,7 @@
     it: {
       "brand": "swisstopo per Garmin",
       "page.title": "Trova le mappe per il mio giro",
-      "page.subtitle": "Trascina il tuo GPX. Ti diciamo quale pacchetto regionale scaricare.",
-      "dz.title": "Trascina qui il file GPX",
-      "dz.sub": "o clicca per scegliere",
-      "or.label": "OPPURE",
+      "page.subtitle": "Clicca una regione sulla mappa o cerca un luogo. Ti diciamo quale pacchetto scaricare.",
       "town.placeholder": "Cerca un luogo: Zermatt, Verbier, Davos…",
       "season.heading": "Stagione (anteprima sulla mappa)",
       "season.winter_lbl": "Inverno",
@@ -631,11 +612,17 @@
       "season.preview_note": "La mappa qui sotto mostra gli stessi livelli inseriti nei file KMZ. Quello che vedi qui è ciò che il tuo orologio mostrerà.",
       "slope.tip": "⚠ L'ombreggiatura in 4 classi viene dal modello altimetrico swissALTI3D 10 m. Solo indicativa. Non sostituisce il bollettino valanghe SLF né il giudizio sul posto. Avvertenza completa nella guida all'installazione.",
       "result.heading": "Raccomandazione",
-      "result.empty": "Nessun file caricato.",
+      "result.empty": "Clicca una regione sulla mappa o cerca un luogo.",
+      "pick.hint": "Passa sopra un rettangolo per vederne il nome, cliccalo per i link di download.",
+      "all.label": "Tutto in una volta",
+      "all.title": "Scarica tutta la Svizzera",
+      "all.body": "L'intero set {season} pesa solo {mb} MB in {n} file, abbastanza poco da prendere tutto.",
+      "all.btn": "Scarica tutti i {n} file ({mb} MB)",
+      "all.season_winter": "invernale",
+      "all.season_summer": "estivo",
       "result.no_match.label": "Costruisci un pacchetto su misura",
       "result.no_match.title": "Nessun pacchetto già pronto corrisponde a questo giro",
       "result.no_match": "Forse è fuori dalla Svizzera, in una regione che non distribuiamo ancora, o un giro del Mittelland in inverno (quelle regioni esistono solo come pacchetto estivo). Il custom map maker costruisce un pacchetto per qualsiasi zona in Svizzera.",
-      "result.gpx_empty": "Il GPX non contiene punti trkpt / rtept / wpt.",
       "result.step1": "Passo 1",
       "result.dl_title": "Scarica questi file",
       "result.dl_all": "Scarica tutti i {n} file",
@@ -720,6 +707,7 @@
     try { localStorage.setItem("lang", lang); } catch (e) {}
     applyStaticI18n();
     renderLegend();
+    renderAllCh();
     // If a recommendation is on screen, re-render it.
     if (LAST_PICKER_STATE) {
       renderResult(LAST_PICKER_STATE.points, LAST_PICKER_STATE.scores);
@@ -836,9 +824,15 @@
       if (lbl) lbl.classList.toggle('checked', r.checked);
     });
     renderLegend();
-    if (ZONES.length) drawZoneRects();
+    if (ZONES.length) { drawZoneRects(); renderAllCh(); }
     if (LAST_PICKER_STATE) {
-      LAST_PICKER_STATE.scores = scoreZones(LAST_PICKER_STATE.points);
+      const zn = LAST_PICKER_STATE.zoneN;
+      if (zn != null) {
+        const z = zonesForSeason(season).find(x => x.n === zn);
+        LAST_PICKER_STATE.scores = z ? [{ zone: z, hits: 1, frac: 1 }] : [];
+      } else {
+        LAST_PICKER_STATE.scores = scoreZones(LAST_PICKER_STATE.points);
+      }
       renderResult(LAST_PICKER_STATE.points, LAST_PICKER_STATE.scores);
       highlightZones(LAST_PICKER_STATE.scores);
     }
@@ -884,7 +878,7 @@
 
   let zoneRects = [];
   let drawnZones = [];
-  let routeLayer = null;
+  let highlighted = [];
 
   function filesForSeason(zone, season) {
     if (season === 'summer') return zone.summer_files || [];
@@ -905,33 +899,67 @@
     zoneRects = drawnZones.map(z => {
       const bounds = lv95BboxToBounds(z.bbox_lv95);
       const rect = L.rectangle(bounds, {
-        color: "#888", weight: 1, fillOpacity: 0.0
+        color: "#555", weight: 1.5, fillColor: "#555", fillOpacity: 0.04
       }).addTo(map);
       rect.bindTooltip(`#${String(z.n).padStart(2,'0')} ${z.name}`,
         { sticky: true, direction: "auto" });
+      rect.on('click', () => selectZone(z));
+      rect.on('mouseover', () => rect.setStyle({ weight: 3, fillOpacity: 0.15 }));
+      rect.on('mouseout', () => highlightZones(highlighted));
       return rect;
     });
+    highlightZones(highlighted);
+  }
+
+  // Click on a zone rectangle: recommend exactly that zone's pack.
+  function selectZone(z) {
+    if (townMarker) { map.removeLayer(townMarker); townMarker = null; }
+    const bounds = lv95BboxToBounds(z.bbox_lv95);
+    const center = [(bounds[0][0] + bounds[1][0]) / 2, (bounds[0][1] + bounds[1][1]) / 2];
+    const points = [center];
+    const scores = [{ zone: z, hits: 1, frac: 1 }];
+    LAST_PICKER_STATE = { points, scores, zoneN: z.n };
+    renderResult(points, scores);
+    highlightZones(scores);
+    document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // "Download everything" box. Only offered when the whole season set is
+  // small enough to fit the watch's tile cap; otherwise it would be a
+  // multi-GB download the watch can't hold anyway.
+  function renderAllCh() {
+    const el = document.getElementById('allCh');
+    if (!el || !MANIFEST) return;
+    const zones = zonesForSeason(activeSeason);
+    const tiles = zones.reduce((a, z) => a + (z.total_tiles_est || 0), 0);
+    if (!zones.length || !MANIFEST.tile_cap || tiles > MANIFEST.tile_cap) {
+      el.innerHTML = "";
+      return;
+    }
+    const files = buildDownloads(zones, true).files;
+    const mb = files.reduce((a, f) => a + (f.size_mb || 0), 0).toFixed(0);
+    el.innerHTML = `
+      <div class="recommend" style="margin-top:1rem">
+        <span class="step-label">${T("all.label")}</span>
+        <h3 class="r-title">${T("all.title")}</h3>
+        <p>${T("all.body")
+            .replace("{season}", T("all.season_" + activeSeason))
+            .replace("{mb}", mb).replace("{n}", files.length)}</p>
+        <button class="dl-all" id="dlAllChBtn">⬇ ${T("all.btn")
+            .replace("{n}", files.length).replace("{mb}", mb)}</button>
+        <p class="dl-tip">${T("result.dl_tip")}</p>
+      </div>`;
+    document.getElementById('dlAllChBtn')
+      .addEventListener('click', e => downloadStaggered(files, e.currentTarget));
   }
 
   fetch('manifest.json')
     .then(r => { if (!r.ok) throw new Error(`manifest ${r.status}`); return r.json(); })
-    .then(m => { MANIFEST = m; ZONES = m.zones; drawZoneRects(); })
+    .then(m => { MANIFEST = m; ZONES = m.zones; drawZoneRects(); renderAllCh(); })
     .catch(err => {
       document.getElementById('result').innerHTML =
         `<div class="empty-state">⚠ Could not load manifest.json (${err.message}).</div>`;
     });
-
-  function parseGpx(text) {
-    const doc = new DOMParser().parseFromString(text, 'application/xml');
-    if (doc.querySelector('parsererror')) throw new Error("invalid XML");
-    const points = [];
-    doc.querySelectorAll('trkpt, rtept, wpt').forEach(el => {
-      const lat = parseFloat(el.getAttribute('lat'));
-      const lon = parseFloat(el.getAttribute('lon'));
-      if (Number.isFinite(lat) && Number.isFinite(lon)) points.push([lat, lon]);
-    });
-    return points;
-  }
 
   function scoreZones(points) {
     const scores = zonesForSeason(activeSeason).map(z => ({ zone: z, hits: 0 }));
@@ -996,6 +1024,8 @@
       return;
     }
     const summer = activeSeason === 'summer';
+    // Zone clicked on the map (vs. a searched place): no "route" to talk about.
+    const picked = !!(LAST_PICKER_STATE && LAST_PICKER_STATE.zoneN != null);
 
     const finalRecommended = [];
     const finalOthers = [];
@@ -1062,7 +1092,9 @@
       <div class="recommend">
         <span class="step-label">${T("result.step1")}</span>
         <h3 class="r-title">${T("result.dl_title")}</h3>
-        <p>${T("result.dl_body_1")} <strong>${finalRecommended.length} ${zoneWord}</strong> (${T("result.dl_plus")} <strong>${totalRecMb.toFixed(0)} MB</strong>).</p>
+        <p>${picked
+          ? `<strong>#${String(finalRecommended[0].zone.n).padStart(2,'0')} ${finalRecommended[0].zone.name}</strong> (${T("result.dl_plus")} <strong>${totalRecMb.toFixed(0)} MB</strong>).`
+          : `${T("result.dl_body_1")} <strong>${finalRecommended.length} ${zoneWord}</strong> (${T("result.dl_plus")} <strong>${totalRecMb.toFixed(0)} MB</strong>).`}</p>
         ${zipUrl
           ? `<a class="dl-all" href="${zipUrl}" download>⬇ ${T("result.dl_zip").replace("{mb}", zipMb)}</a>
              <p class="dl-tip">${T("result.dl_zip_tip")}</p>
@@ -1077,8 +1109,10 @@
     // Stash for the dl-all click handler (only used when there's no zip).
     LAST_DL_FILES = dl.files;
 
-    html += `<h3 class="sect">${T("result.why_heading")}</h3>`;
-    html += `<p style="font-size:0.83rem; color:var(--muted); margin:0.2rem 0 0.5rem">${T("result.why_lead")}</p>`;
+    if (!picked) {
+      html += `<h3 class="sect">${T("result.why_heading")}</h3>`;
+      html += `<p style="font-size:0.83rem; color:var(--muted); margin:0.2rem 0 0.5rem">${T("result.why_lead")}</p>`;
+    }
     for (const r of finalRecommended) {
       const z = r.zone;
       const files = filesForSeason(z, activeSeason);
@@ -1086,7 +1120,7 @@
       const sizeStr = files.length ? `${sizeMb} MB` : T("result.not_built");
       html += `<div class="pack ${classify(r.frac)}">
         <div class="pack-name">✓ #${String(z.n).padStart(2,'0')} ${z.name}${summer ? " (summer)" : ""}</div>
-        <div class="pack-stats">${(r.frac*100).toFixed(0)}% ${T("result.zone_pct")}, ${sizeStr}</div>
+        <div class="pack-stats">${picked ? "" : `${(r.frac*100).toFixed(0)}% ${T("result.zone_pct")}, `}${sizeStr}</div>
         <div class="pack-desc">${z.desc || ""}</div>
       </div>`;
     }
@@ -1141,79 +1175,58 @@
     }
     el.innerHTML = html;
 
-    // Wire "Download all". Chrome blocks programmatic batch downloads from
-    // the same origin and prompts the user once with "Allow site to download
-    // multiple files"; with too-fast triggers it just drops the rest. Stagger
-    // generously and use a hidden iframe per file (anchor.click() is more
-    // likely to be deduped by some browsers).
     const dlAll = document.getElementById('dlAllBtn');
     if (dlAll && LAST_DL_FILES.length) {
-      dlAll.addEventListener('click', () => {
-        dlAll.textContent = T("result.dl_all_progress") + " (0/" + LAST_DL_FILES.length + ")";
-        dlAll.disabled = true;
-        LAST_DL_FILES.forEach((f, i) => {
-          setTimeout(() => {
-            const ifr = document.createElement('iframe');
-            ifr.style.display = 'none';
-            ifr.src = f.url;
-            document.body.appendChild(ifr);
-            setTimeout(() => { try { document.body.removeChild(ifr); } catch (_) {} }, 10000);
-            dlAll.textContent = T("result.dl_all_progress") + " (" + (i + 1) + "/" + LAST_DL_FILES.length + ")";
-            if (i === LAST_DL_FILES.length - 1) {
-              setTimeout(() => {
-                dlAll.textContent = T("result.dl_all_done");
-                dlAll.disabled = false;
-              }, 1500);
-            }
-          }, i * 1400);
-        });
-      });
+      dlAll.addEventListener('click', () => downloadStaggered(LAST_DL_FILES, dlAll));
     }
   }
 
+  // Chrome blocks programmatic batch downloads from the same origin and
+  // prompts the user once with "Allow site to download multiple files"; with
+  // too-fast triggers it just drops the rest. Stagger generously and use a
+  // hidden iframe per file (anchor.click() is more likely to be deduped by
+  // some browsers).
+  function downloadStaggered(files, btn) {
+    btn.textContent = T("result.dl_all_progress") + " (0/" + files.length + ")";
+    btn.disabled = true;
+    files.forEach((f, i) => {
+      setTimeout(() => {
+        const ifr = document.createElement('iframe');
+        ifr.style.display = 'none';
+        ifr.src = f.url;
+        document.body.appendChild(ifr);
+        setTimeout(() => { try { document.body.removeChild(ifr); } catch (_) {} }, 10000);
+        btn.textContent = T("result.dl_all_progress") + " (" + (i + 1) + "/" + files.length + ")";
+        if (i === files.length - 1) {
+          setTimeout(() => {
+            btn.textContent = T("result.dl_all_done");
+            btn.disabled = false;
+          }, 1500);
+        }
+      }, i * 1400);
+    });
+  }
+
   function highlightZones(matched) {
+    highlighted = matched;
     const matchedIds = new Set(matched.map(s => s.zone.n));
     zoneRects.forEach((rect, i) => {
       const z = drawnZones[i];
       const isMatched = matchedIds.has(z.n);
       const isPrimary = matched[0] && matched[0].zone.n === z.n;
       rect.setStyle({
-        color: isPrimary ? "#27ae60" : (isMatched ? "#3498db" : "#888"),
-        weight: isPrimary ? 3 : (isMatched ? 2 : 1),
-        fillOpacity: isPrimary ? 0.18 : (isMatched ? 0.08 : 0.0)
+        color: isPrimary ? "#27ae60" : (isMatched ? "#3498db" : "#555"),
+        fillColor: isPrimary ? "#27ae60" : (isMatched ? "#3498db" : "#555"),
+        weight: isPrimary ? 3 : (isMatched ? 2 : 1.5),
+        fillOpacity: isPrimary ? 0.18 : (isMatched ? 0.08 : 0.04)
       });
     });
-  }
-
-  function loadGpx(file) {
-    const reader = new FileReader();
-    reader.onload = ev => {
-      try {
-        const points = parseGpx(ev.target.result);
-        if (points.length === 0) {
-          document.getElementById('result').innerHTML =
-            `<div class="empty-state">⚠ ${T("result.gpx_empty")}</div>`;
-          return;
-        }
-        if (routeLayer) map.removeLayer(routeLayer);
-        routeLayer = L.polyline(points, { color: '#d4351c', weight: 4, opacity: 0.85 }).addTo(map);
-        map.fitBounds(routeLayer.getBounds().pad(0.15));
-        const scores = scoreZones(points);
-        LAST_PICKER_STATE = { points, scores };
-        renderResult(points, scores);
-        highlightZones(scores);
-      } catch (err) {
-        document.getElementById('result').innerHTML =
-          `<div class="empty-state">⚠ ${err.message}</div>`;
-      }
-    };
-    reader.readAsText(file);
   }
 
   // ───────────── Town search (Swisstopo SearchServer) ─────────────
   // type=locations covers towns, hamlets, valleys, named landmarks. We project
   // the result LV95 -> WGS84 once and feed a single-point "route" through the
-  // same scoring / rendering path the GPX flow uses.
+  // same scoring / rendering path as a clicked zone.
   const SWISSTOPO_SEARCH = "https://api3.geo.admin.ch/rest/services/api/SearchServer";
   let townDebounce = null;
   let townMarker = null;
@@ -1230,7 +1243,6 @@
   function applyTown(t) {
     document.getElementById('townInput').value = t.label;
     document.getElementById('townSuggest').style.display = 'none';
-    if (routeLayer) { map.removeLayer(routeLayer); routeLayer = null; }
     if (townMarker) map.removeLayer(townMarker);
     townMarker = L.circleMarker([t.lat, t.lon], {
       radius: 8, color: '#d4351c', weight: 3, fillColor: '#fff', fillOpacity: 1
@@ -1291,22 +1303,6 @@
       document.getElementById('townSuggest').style.display = 'none';
     });
   }
-
-  // Drag-and-drop wiring
-  const dz = document.getElementById('dropzone');
-  const fi = document.getElementById('fileInput');
-  dz.addEventListener('click', () => fi.click());
-  fi.addEventListener('change', e => { if (e.target.files[0]) loadGpx(e.target.files[0]); });
-  ['dragover','dragenter'].forEach(ev => {
-    dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('over'); });
-  });
-  ['dragleave','dragend','drop'].forEach(ev => {
-    dz.addEventListener(ev, () => dz.classList.remove('over'));
-  });
-  dz.addEventListener('drop', e => {
-    e.preventDefault();
-    if (e.dataTransfer.files[0]) loadGpx(e.dataTransfer.files[0]);
-  });
 
   applyStaticI18n();
 </script>
